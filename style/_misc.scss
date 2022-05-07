@@ -1,0 +1,14 @@
+a {
+  cursor: pointer;
+}
+
+.no-outline {
+  &,
+  &:hover,
+  &:focus,
+  &:active,
+  &:visited {
+    outline: 0 !important;
+    box-shadow: none !important;
+  }
+}
