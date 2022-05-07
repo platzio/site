@@ -4,10 +4,13 @@
       <div class="primary-header">Platz</div>
       <div class="secondary-header">Let Everyone Deploy Helm Charts</div>
       <div class="my-4 d-flex flex-row">
-        <NuxtLink to="/" class="me-3 btn btn-lg btn-primary">
+        <NuxtLink to="/docs" class="me-3 btn btn-lg btn-primary">
           Learn More
         </NuxtLink>
-        <NuxtLink to="/" class="btn btn-lg btn-outline-primary">
+        <NuxtLink
+          to="/docs/install/helm"
+          class="btn btn-lg btn-outline-primary"
+        >
           Get Started
         </NuxtLink>
       </div>
