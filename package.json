@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@nuxt/content": "^1.15.1",
+    "@nuxtjs/google-gtag": "^1.0.4",
     "@openfonts/inconsolata_all": "^1.44.2",
     "@openfonts/open-sans_all": "^1.44.2",
     "@popperjs/core": "^2.11.5",

@@ -23,9 +23,13 @@ export default {
 
   buildModules: ["@nuxt/components", "@nuxt/typescript-build"],
 
-  modules: ["@nuxt/content"],
+  modules: ["@nuxt/content", "@nuxtjs/google-gtag"],
 
   content: {},
 
   build: {},
+
+  "google-gtag": {
+    id: "G-X2J6J0J06X",
+  },
 };
