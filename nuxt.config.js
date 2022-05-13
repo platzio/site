@@ -31,7 +31,11 @@ export default {
 
   components: true,
 
-  buildModules: ["@nuxt/components", "@nuxt/typescript-build"],
+  buildModules: [
+    "@nuxtjs/moment",
+    "@nuxt/components",
+    "@nuxt/typescript-build",
+  ],
 
   modules: ["@nuxt/content", "@nuxtjs/google-gtag"],
 

@@ -1,11 +1,11 @@
 <template>
-  <nav class="navbar navbar-expand-md navbar-platz">
+  <nav class="navbar navbar-expand navbar-platz">
     <NuxtLink to="/" tag="a" class="navbar-brand" active-class="active">
       <PlatzLogo size="2.5rem" />
     </NuxtLink>
 
     <div>
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <ul class="navbar-nav">
         <li class="nav-item">
           <NuxtLink to="/docs/" class="nav-link" active-class="active">
             Docs
@@ -16,13 +16,11 @@
             API
           </NuxtLink>
         </li>
-        <!--
         <li class="nav-item">
-          <NuxtLink to="/blog" class="nav-link" active-class="active">
+          <NuxtLink to="/blog/" class="nav-link" active-class="active">
             Blog
           </NuxtLink>
         </li>
-        -->
       </ul>
     </div>
   </nav>
