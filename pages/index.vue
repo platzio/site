@@ -28,7 +28,7 @@
 <style lang="scss" scoped>
 .primary-header {
   font-size: 4rem;
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .secondary-header {

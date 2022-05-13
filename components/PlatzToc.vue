@@ -24,7 +24,7 @@ $spacing: 0.6rem;
     label {
       text-transform: uppercase;
       font-size: 0.9rem;
-      font-weight: 500;
+      font-weight: 700;
       color: var(--bs-secondary);
       opacity: 0.5;
     }
@@ -42,7 +42,7 @@ $spacing: 0.6rem;
       display: block;
 
       &.nuxt-link-active {
-        font-weight: 600;
+        font-weight: 700;
         border-left: 0.2rem solid var(--bs-danger);
         padding-left: 0.35rem;
         margin-left: -0.55rem;
