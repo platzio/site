@@ -55,7 +55,7 @@ $spacing: 0.6rem;
 <script lang="ts">
 import Vue, { PropType } from "vue";
 
-interface Doc {
+export interface CollectionItem {
   title: string;
   category?: string;
   position: number;
@@ -72,9 +72,9 @@ interface Category {
 
 export default Vue.extend({
   props: {
-    allDocs: {
+    entireCollection: {
       required: true,
-      type: Array as PropType<Doc[]>,
+      type: Array as PropType<CollectionItem[]>,
     },
   },
 
@@ -97,7 +97,7 @@ export default Vue.extend({
         return newCategory;
       };
 
-      for (const doc of this.allDocs) {
+      for (const doc of this.entireCollection) {
         const category = getCategory(doc.category);
         let { title, path } = doc;
         if (path.endsWith("/index")) {

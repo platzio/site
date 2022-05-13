@@ -7,12 +7,12 @@
     <div>
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <NuxtLink to="/docs" class="nav-link" active-class="active">
+          <NuxtLink to="/docs/" class="nav-link" active-class="active">
             Docs
           </NuxtLink>
         </li>
         <li class="nav-item">
-          <NuxtLink to="/api" class="nav-link" active-class="active">
+          <NuxtLink to="/api/" class="nav-link" active-class="active">
             API
           </NuxtLink>
         </li>
