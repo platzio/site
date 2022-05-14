@@ -5,8 +5,8 @@
     </div>
 
     <div class="row">
-      <div class="col-lg" />
-      <div class="col-lg-8">
+      <div class="col-md" />
+      <div class="col-lg-8 col-md-10">
         <div class="nuxt-content">
           <div class="h1">
             {{ page.title }}
@@ -14,7 +14,7 @@
         </div>
         <nuxt-content :document="page" />
       </div>
-      <div class="col-lg" />
+      <div class="col-md" />
     </div>
   </div>
 </template>
