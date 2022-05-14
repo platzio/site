@@ -1,0 +1,1 @@
+__NUXT_JSONP__("/blog", (function(a){return {data:[{entireCollection:[{title:"Version 0.3.5 Released",date:"2022-05-13T18:37:00.000Z",group:a,path:"\u002Fblog\u002F2022\u002F05\u002F13\u002Fv0.3.5"},{title:"Version 0.3.0 Released",date:"2022-04-26T19:50:10.000Z",group:a,path:"\u002Fblog\u002F2022\u002F04\u002F26\u002Fv0.3.0"}]}],fetch:{},mutations:void 0}}("releases")));
