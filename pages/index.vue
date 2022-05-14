@@ -15,7 +15,7 @@
         </NuxtLink>
       </div>
       <div class="my-3 lead text-secondary">
-        Latest release: <strong>0.3.4</strong>
+        Latest release: <strong>{{ latestRelease[0].release }}</strong>
       </div>
     </div>
 
@@ -36,3 +36,24 @@
   color: var(--bs-secondary);
 }
 </style>
+
+<script lang="ts">
+import Vue from "vue";
+
+export default Vue.extend({
+  layout: "content",
+
+  async asyncData({ $content }) {
+    const latestRelease = await $content("blog", { deep: true })
+      .only(["group", "release"])
+      .where({ group: "releases" })
+      .sortBy("date", "desc")
+      .limit(1)
+      .fetch();
+
+    return {
+      latestRelease,
+    };
+  },
+});
+</script>

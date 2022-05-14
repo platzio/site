@@ -14,3 +14,7 @@ $font-weight-light: 300;
 $font-weight-normal: 400;
 $headings-font-weight: 600;
 $font-weight-bold: 700;
+
+strong {
+  font-weight: $font-weight-bold !important;
+}
