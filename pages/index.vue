@@ -14,8 +14,15 @@
           Get Started
         </NuxtLink>
       </div>
-      <div class="my-3 lead text-secondary">
-        Latest release: <strong>{{ latestRelease[0].release }}</strong>
+      <div class="my-3">
+        <div class="my-1 lead text-secondary">
+          Latest release: <strong>{{ latestRelease[0].release }}</strong>
+        </div>
+        <div class="my-1">
+          <NuxtLink :to="latestRelease[0].path">
+            Read the release notes
+          </NuxtLink>
+        </div>
       </div>
     </div>
 
@@ -45,7 +52,7 @@ export default Vue.extend({
 
   async asyncData({ $content }) {
     const latestRelease = await $content("blog", { deep: true })
-      .only(["group", "release"])
+      .only(["group", "release", "path"])
       .where({ group: "releases" })
       .sortBy("date", "desc")
       .limit(1)
