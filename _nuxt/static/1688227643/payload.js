@@ -1,0 +1,1 @@
+__NUXT_JSONP__("/", {data:[{latestRelease:[{group:"releases",release:"0.5.0",path:"\u002Fblog\u002F2023\u002F07\u002F01\u002Fv0.5.0"}]}],fetch:{},mutations:void 0});
