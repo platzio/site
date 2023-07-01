@@ -13,45 +13,6 @@
   </div>
 </template>
 
-<style lang="scss">
-$spacing: 0.6rem;
-
-.docs-toc {
-  .category {
-    margin-top: $spacing * 2.35;
-    margin-bottom: $spacing;
-
-    label {
-      text-transform: uppercase;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--bs-secondary);
-      opacity: 0.5;
-    }
-
-    &:first-child {
-      margin-top: 0;
-    }
-  }
-
-  .item {
-    margin-top: $spacing;
-
-    a {
-      color: var(--bs-secondary);
-      display: block;
-
-      &.nuxt-link-active {
-        font-weight: 700;
-        border-left: 0.2rem solid var(--bs-danger);
-        padding-left: 0.35rem;
-        margin-left: -0.55rem;
-      }
-    }
-  }
-}
-</style>
-
 <script lang="ts">
 import Vue, { PropType } from "vue";
 

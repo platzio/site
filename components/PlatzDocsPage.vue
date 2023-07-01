@@ -11,28 +11,6 @@
   </div>
 </template>
 
-<style lang="scss" scoped>
-.platz-docs {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-
-  > .toc {
-    width: 10rem;
-    margin-right: 2rem;
-  }
-
-  > .content {
-    font-size: 1.125rem;
-    flex-basis: 100%;
-
-    &:first {
-      margin-top: 0;
-    }
-  }
-}
-</style>
-
 <script lang="ts">
 import { FetchReturn } from "@nuxt/content/types/query-builder";
 import Vue, { PropType } from "vue";

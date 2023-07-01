@@ -1,0 +1,56 @@
+$docs-spacing: 0.6rem;
+
+.platz-docs {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+
+  > .toc {
+    width: 10rem;
+    margin-right: 2rem;
+  }
+
+  > .content {
+    font-size: 1.125rem;
+    flex-basis: 100%;
+
+    &:first {
+      margin-top: 0;
+    }
+  }
+}
+
+.docs-toc {
+  .category {
+    margin-top: $docs-spacing * 2.35;
+    margin-bottom: $docs-spacing;
+
+    label {
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--bs-secondary);
+      opacity: 0.5;
+    }
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  .item {
+    margin-top: $docs-spacing;
+
+    a {
+      color: var(--bs-secondary);
+      display: block;
+
+      &.nuxt-link-active {
+        font-weight: 700;
+        border-left: 0.2rem solid var(--bs-danger);
+        padding-left: 0.35rem;
+        margin-left: -0.55rem;
+      }
+    }
+  }
+}
