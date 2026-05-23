@@ -6,20 +6,20 @@ sidebar_position: 3
 
 An **env** in Platz is a logical container for clusters, deployments, and the people who can touch them. You'll usually map envs to your existing operational tiers — `production`, `staging`, `dev`, `dogfood`, one per customer for multi-tenant setups, one per team for shared infrastructure.
 
-Site admins manage envs from `/admin/envs`. Env-level admins manage *their own* env settings from `/envs/<env>/settings` — see [Permissions](/docs/guide/envs/permissions), [Secrets](/docs/guide/envs/secrets), and [Resources](/docs/guide/envs/resources) for that side.
+Site admins manage envs from `/admin/envs`. Env-level admins manage _their own_ env settings from `/envs/<env>/settings` — see [Permissions](/docs/guide/envs/permissions), [Secrets](/docs/guide/envs/secrets), and [Resources](/docs/guide/envs/resources) for that side.
 
 ## What an env contains
 
 The fields on an env record:
 
-| Field | Description |
-| --- | --- |
-| `name` | Display name. No length restrictions, but shorter is better — it shows up in the env switcher and in URLs. |
-| `node_selector` | A JSON object that becomes the `nodeSelector` Helm value for every deployment in this env. Use this to pin all of an env's pods to specific nodes. |
-| `tolerations` | A JSON array that becomes the `tolerations` Helm value for every deployment in this env. Use with taints to keep this env's workloads on dedicated nodes. |
-| `auto_add_new_users` | If `true`, every new user created at OIDC signup is granted the env-level `User` role on this env. Off by default. |
+| Field                | Description                                                                                                                                               |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`               | Display name. No length restrictions, but shorter is better — it shows up in the env switcher and in URLs.                                                |
+| `node_selector`      | A JSON object that becomes the `nodeSelector` Helm value for every deployment in this env. Use this to pin all of an env's pods to specific nodes.        |
+| `tolerations`        | A JSON array that becomes the `tolerations` Helm value for every deployment in this env. Use with taints to keep this env's workloads on dedicated nodes. |
+| `auto_add_new_users` | If `true`, every new user created at OIDC signup is granted the env-level `User` role on this env. Off by default.                                        |
 
-There's no env-level domain, no env-level OIDC config, no env-level secrets *here* — those live on individual clusters, on the install as a whole, and on each env's own settings respectively.
+There's no env-level domain, no env-level OIDC config, no env-level secrets _here_ — those live on individual clusters, on the install as a whole, and on each env's own settings respectively.
 
 ## Creating envs
 
@@ -74,7 +74,7 @@ Charts can declare additional locations to inject node selectors and tolerations
 
 ## Editing envs
 
-Env settings can be changed at any time. They take effect on the *next* helm install/upgrade for each deployment, not retroactively — a running deployment whose env's node selector just changed continues to run wherever it was scheduled until something else triggers a Helm operation on it.
+Env settings can be changed at any time. They take effect on the _next_ helm install/upgrade for each deployment, not retroactively — a running deployment whose env's node selector just changed continues to run wherever it was scheduled until something else triggers a Helm operation on it.
 
 To force a re-deploy across the whole env, the cleanest option is to bump each deployment by triggering a Reinstall task. There's no "redeploy all" button (yet); script it via the API if you need it often.
 

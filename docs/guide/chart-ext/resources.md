@@ -18,7 +18,7 @@ Resource types fit when:
 - The sub-objects need user-managed UI (form for create, list view, etc.).
 - The sub-objects can be referenced by other deployments via dropdowns.
 
-If each sub-object needs its own Kubernetes resources (pods, services, separate namespaces), you're better off creating it as a separate deployment of a child chart, not as a resource. Resources are *data* objects in Platz's database with optional callback hooks; they're not Helm releases.
+If each sub-object needs its own Kubernetes resources (pods, services, separate namespaces), you're better off creating it as a separate deployment of a child chart, not as a resource. Resources are _data_ objects in Platz's database with optional callback hooks; they're not Helm releases.
 
 ## File structure
 
@@ -85,15 +85,15 @@ Each `ResourceType` is a separate resource. You can declare multiple resource ty
 
 ## Spec fields
 
-| Field | Type | Required | Notes |
-| --- | --- | --- | --- |
-| `key` (top-level on resource) | string | Yes | Machine identifier for this type. Used in collection references and audit logs. Don't change after release. |
-| `spec.name_singular` | string | Yes | Display name for one instance (e.g., "Shop"). Used in headers and button labels. |
-| `spec.name_plural` | string | Yes | Display name for many (e.g., "Shops"). Used in the env-nav tab and list headers. |
-| `spec.fontawesome_icon` | string | Yes | FontAwesome class without `fa-` prefix. Shown next to the resource type label and in each row. |
-| `spec.global` | boolean | No (default false) | If `true`, resources of this type are visible across envs (rare; usually leave as false). |
-| `spec.values_ui` | object | Yes | A full values-ui schema (inputs + outputs). Defines the form for creating/editing instances. |
-| `spec.lifecycle` | object | No | Per-operation hook config. See below. |
+| Field                         | Type    | Required           | Notes                                                                                                       |
+| ----------------------------- | ------- | ------------------ | ----------------------------------------------------------------------------------------------------------- |
+| `key` (top-level on resource) | string  | Yes                | Machine identifier for this type. Used in collection references and audit logs. Don't change after release. |
+| `spec.name_singular`          | string  | Yes                | Display name for one instance (e.g., "Shop"). Used in headers and button labels.                            |
+| `spec.name_plural`            | string  | Yes                | Display name for many (e.g., "Shops"). Used in the env-nav tab and list headers.                            |
+| `spec.fontawesome_icon`       | string  | Yes                | FontAwesome class without `fa-` prefix. Shown next to the resource type label and in each row.              |
+| `spec.global`                 | boolean | No (default false) | If `true`, resources of this type are visible across envs (rare; usually leave as false).                   |
+| `spec.values_ui`              | object  | Yes                | A full values-ui schema (inputs + outputs). Defines the form for creating/editing instances.                |
+| `spec.lifecycle`              | object  | No                 | Per-operation hook config. See below.                                                                       |
 
 The `values_ui` block is exactly the same schema as a chart's main `values-ui.yaml` — see [Inputs](/docs/guide/chart-ext/inputs) and [Outputs](/docs/guide/chart-ext/outputs). The `outputs.values` are stored in the resource's `properties` field; the `outputs.secrets` block is **not** applicable to resources (resources don't create Kubernetes Secrets).
 
@@ -124,7 +124,7 @@ spec:
         method: DELETE
 ```
 
-The `target` is optional. If absent, Platz writes the resource row to the database (or removes it for delete) and that's it — no callback. If present, Platz fires the HTTP request *in addition to* the database write.
+The `target` is optional. If absent, Platz writes the resource row to the database (or removes it for delete) and that's it — no callback. If present, Platz fires the HTTP request _in addition to_ the database write.
 
 The HTTP request includes the resource's resolved output values as the JSON body, plus an `Authorization: Bearer <jwt>` header (same JWT as actions, see [Credentials](/docs/guide/deployments/credentials)).
 
@@ -171,7 +171,7 @@ outputs:
           property: opening_hour
 ```
 
-The available properties are whatever you wrote to `outputs.values` in the resource type's own `values_ui`. So the resource type's outputs define both *what's stored in the database* and *what other charts can extract via FieldProperty*. Worth thinking through up front.
+The available properties are whatever you wrote to `outputs.values` in the resource type's own `values_ui`. So the resource type's outputs define both _what's stored in the database_ and _what other charts can extract via FieldProperty_. Worth thinking through up front.
 
 ## Lifecycle: resource type addition / removal
 

@@ -35,7 +35,7 @@ The flow:
      collection: db-creds
    ```
 3. When a user creates a deployment of that chart, the input renders as a dropdown showing the secret names in the `db-creds` collection.
-4. The user picks one. Platz remembers the *name* of the selected secret in `deployment.config`, not its value.
+4. The user picks one. Platz remembers the _name_ of the selected secret in `deployment.config`, not its value.
 5. At install/upgrade time, Platz resolves the name to the current value and renders a Kubernetes `Secret` resource in the deployment's namespace. The chart's pods mount or reference the secret as usual.
 
 Two implications:
@@ -55,7 +55,7 @@ Two implications:
 
 1. Click **Add Secret**.
 2. Pick a collection (existing or new). Collection names are free-form strings; pick something that means something to your chart authors.
-3. Give the secret a name. Names within a collection must be unique. Names *across* collections can repeat (you can have `db-creds.password` and `cache-creds.password`).
+3. Give the secret a name. Names within a collection must be unique. Names _across_ collections can repeat (you can have `db-creds.password` and `cache-creds.password`).
 4. Enter the value. The input is masked by default; nothing about the value is constrained — Platz stores it verbatim.
 
 ### Editing secret contents

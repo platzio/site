@@ -27,7 +27,7 @@ If you have site-admin rights, you'll also see a small badge or indicator (depen
 User tokens are right when:
 
 - You're writing a personal script or one-off automation that needs to call the Platz API.
-- The script should act *as you* — same env access, same deployment-level permissions.
+- The script should act _as you_ — same env access, same deployment-level permissions.
 - The script's lifetime is short, or you're comfortable rotating the token when needed.
 
 User tokens are **not** the right choice for:
@@ -36,7 +36,7 @@ User tokens are **not** the right choice for:
 - **Shared automation across the team.** "We all use Alice's token" is brittle. Bots scope to the function, not the human.
 - **Anything that needs different permissions than you have.** Bots can be granted a different permission set than any individual user.
 
-In short: user tokens are for *your* tooling, not for the team's.
+In short: user tokens are for _your_ tooling, not for the team's.
 
 ### Creating a user token
 

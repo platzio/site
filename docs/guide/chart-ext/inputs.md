@@ -28,17 +28,17 @@ This page covers `inputs`. See [Outputs](/docs/guide/chart-ext/outputs) for the 
 
 Every input shares these fields:
 
-| Field | Type | Required | Notes |
-| --- | --- | --- | --- |
-| `id` | string | Yes | The identifier for this input. Used in `outputs` and in conditional `showIf` references. Must be unique within the file. |
-| `type` | string | Yes | The input type (see below). Or `array` for an array of one of those types, with `itemType` set. |
-| `label` | string | Yes | The human-readable label shown above the field. |
-| `required` | boolean | No (default `false`) | If `true`, the form can't be submitted without a value. |
-| `initialValue` | any | No | The pre-filled value when creating a new deployment. The shape depends on the type. |
-| `helpText` | string | No | A short description rendered below the field. Markdown not supported; plain text only. |
-| `showIf` | object | No | A JsonLogic expression that determines whether this field is shown. See [Conditional inputs](#conditional-inputs). |
-| `showIfAll` | array | No | Legacy alternative to `showIf` — a simple list of `{field, value}` pairs all of which must match. Prefer `showIf`. |
-| `sensitive` | boolean | No (default `false`) | If `true`, the field renders masked in the UI. Common for passwords, API keys. |
+| Field          | Type    | Required             | Notes                                                                                                                    |
+| -------------- | ------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `id`           | string  | Yes                  | The identifier for this input. Used in `outputs` and in conditional `showIf` references. Must be unique within the file. |
+| `type`         | string  | Yes                  | The input type (see below). Or `array` for an array of one of those types, with `itemType` set.                          |
+| `label`        | string  | Yes                  | The human-readable label shown above the field.                                                                          |
+| `required`     | boolean | No (default `false`) | If `true`, the form can't be submitted without a value.                                                                  |
+| `initialValue` | any     | No                   | The pre-filled value when creating a new deployment. The shape depends on the type.                                      |
+| `helpText`     | string  | No                   | A short description rendered below the field. Markdown not supported; plain text only.                                   |
+| `showIf`       | object  | No                   | A JsonLogic expression that determines whether this field is shown. See [Conditional inputs](#conditional-inputs).       |
+| `showIfAll`    | array   | No                   | Legacy alternative to `showIf` — a simple list of `{field, value}` pairs all of which must match. Prefer `showIf`.       |
+| `sensitive`    | boolean | No (default `false`) | If `true`, the field renders masked in the UI. Common for passwords, API keys.                                           |
 
 The field-name spelling is **camelCase** — `initialValue`, not `initial_value`. The Rust crate uses serde with camelCase rename, so snake_case in your YAML fails to parse silently (the field is treated as missing).
 
@@ -135,7 +135,7 @@ A dropdown that pulls its options from a Platz-managed collection. Three common 
   collection: db-creds
 ```
 
-The dropdown lists every secret in the `db-creds` collection. The Helm value is the *name* of the selected secret; outputs resolve the name to the actual value at install time. See [Secrets](/docs/guide/envs/secrets).
+The dropdown lists every secret in the `db-creds` collection. The Helm value is the _name_ of the selected secret; outputs resolve the name to the actual value at install time. See [Secrets](/docs/guide/envs/secrets).
 
 **Deployment resources** — pick a resource of a specific type.
 
@@ -200,7 +200,7 @@ Any of the above types can be made into an array by setting `type: array` and `i
 
 Users can add and remove items in the UI. The Helm value is a YAML array of the underlying type's values.
 
-`CollectionSelect` arrays are useful when a chart needs to reference *multiple* items from a collection — e.g., a chart that runs in multiple regions.
+`CollectionSelect` arrays are useful when a chart needs to reference _multiple_ items from a collection — e.g., a chart that runs in multiple regions.
 
 ## Conditional inputs
 
@@ -231,16 +231,16 @@ Simple equality check:
 
 Operators commonly used in `showIf`:
 
-| Operator | Syntax | Notes |
-| --- | --- | --- |
-| Strict equality | `{"===": [<left>, <right>]}` | The most common case |
-| Inequality | `{"!==": [<left>, <right>]}` | "not equal to" |
-| Numeric comparison | `{">": [<left>, <right>]}`, `{">=": ...}`, `{"<": ...}`, `{"<=": ...}` | |
-| Logical AND | `{"and": [<expr>, <expr>, ...]}` | Variadic |
-| Logical OR | `{"or": [<expr>, <expr>, ...]}` | Variadic |
-| Negation | `{"!": <expr>}` | Single expression |
-| Variable reference | `{"var": "<input_id>"}` | Reads another input's current value |
-| String substring | `{"substr": [<string>, <start>, <length>]}` | First N chars, etc. |
+| Operator           | Syntax                                                                 | Notes                               |
+| ------------------ | ---------------------------------------------------------------------- | ----------------------------------- |
+| Strict equality    | `{"===": [<left>, <right>]}`                                           | The most common case                |
+| Inequality         | `{"!==": [<left>, <right>]}`                                           | "not equal to"                      |
+| Numeric comparison | `{">": [<left>, <right>]}`, `{">=": ...}`, `{"<": ...}`, `{"<=": ...}` |                                     |
+| Logical AND        | `{"and": [<expr>, <expr>, ...]}`                                       | Variadic                            |
+| Logical OR         | `{"or": [<expr>, <expr>, ...]}`                                        | Variadic                            |
+| Negation           | `{"!": <expr>}`                                                        | Single expression                   |
+| Variable reference | `{"var": "<input_id>"}`                                                | Reads another input's current value |
+| String substring   | `{"substr": [<string>, <start>, <length>]}`                            | First N chars, etc.                 |
 
 Complex example:
 
@@ -274,7 +274,7 @@ The support email is shown if the user picks the `paid` tier, OR if they pick `f
 
 ### When a `required` input is hidden
 
-If an input has `required: true` and is hidden by `showIf`, it's treated as *not provided* for output resolution. This means:
+If an input has `required: true` and is hidden by `showIf`, it's treated as _not provided_ for output resolution. This means:
 
 - Outputs that reference the hidden input via `FieldValue` are skipped (the output entry is omitted from the Helm values).
 - The user can submit the form without filling the hidden input (because it isn't shown).

@@ -4,21 +4,21 @@ sidebar_position: 4
 
 # Tasks & History
 
-Everything Platz does to a deployment is recorded as a **task** — a row in the `deployment_tasks` table that describes *what* should happen, *who* triggered it, and *what* the outcome was. The History tab on each deployment is a paginated view of that table, newest first.
+Everything Platz does to a deployment is recorded as a **task** — a row in the `deployment_tasks` table that describes _what_ should happen, _who_ triggered it, and _what_ the outcome was. The History tab on each deployment is a paginated view of that table, newest first.
 
 This page explains the task types, their lifecycle, and how to read the History tab.
 
 ## Task types
 
-| Operation | Triggered by | What it does |
-| --- | --- | --- |
-| **Install** | First save of a new deployment | Creates the namespace, runs `helm install` |
-| **Upgrade** | Editing chart version, config inputs, or values_override on an existing deployment | Runs `helm upgrade` with the new values |
-| **Reinstall** | A referenced env secret changed, or a referenced deployment was re-deployed (if `reinstall_dependencies: true` on the chart) | Same as Upgrade but with a "reason" recorded |
-| **Recreate** | Moving a deployment to a different cluster (and optionally a different namespace) | Uninstalls from old location, installs into the new one |
-| **Uninstall** | Disabling or deleting a deployment | Runs `helm uninstall`, deletes the namespace |
-| **InvokeAction** | A user clicks a chart-defined action, or another deployment calls the action via the API | HTTPS POST to the chart's standard ingress endpoint with the action body |
-| **RestartK8sResource** | The Restart button on a row in the Resources tab | `kubectl rollout restart` on a Deployment/StatefulSet, or `kubectl delete` on a Pod |
+| Operation              | Triggered by                                                                                                                 | What it does                                                                        |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| **Install**            | First save of a new deployment                                                                                               | Creates the namespace, runs `helm install`                                          |
+| **Upgrade**            | Editing chart version, config inputs, or values_override on an existing deployment                                           | Runs `helm upgrade` with the new values                                             |
+| **Reinstall**          | A referenced env secret changed, or a referenced deployment was re-deployed (if `reinstall_dependencies: true` on the chart) | Same as Upgrade but with a "reason" recorded                                        |
+| **Recreate**           | Moving a deployment to a different cluster (and optionally a different namespace)                                            | Uninstalls from old location, installs into the new one                             |
+| **Uninstall**          | Disabling or deleting a deployment                                                                                           | Runs `helm uninstall`, deletes the namespace                                        |
+| **InvokeAction**       | A user clicks a chart-defined action, or another deployment calls the action via the API                                     | HTTPS POST to the chart's standard ingress endpoint with the action body            |
+| **RestartK8sResource** | The Restart button on a row in the Resources tab                                                                             | `kubectl rollout restart` on a Deployment/StatefulSet, or `kubectl delete` on a Pod |
 
 Every task carries:
 
@@ -97,4 +97,4 @@ For compliance scenarios that need formal audit logs, export `deployment_tasks` 
 - **The History tab is per-deployment.** There's no cross-deployment task view in the UI. For "what's happening across the env right now", you need to either query the database or watch the WebSocket events stream.
 - **Task `reason` is plain text.** It may include the helm pod's stdout/stderr (large), which can make the History tab slow to render for very chatty failures. Truncation is not currently applied.
 - **Old tasks accumulate.** A deployment that's been around for a year on an active service might have hundreds of tasks. The list is paginated but the underlying table grows monotonically. See [Database](/docs/guide/install/database) for retention guidance.
-- **Cancelling a task doesn't roll back partial work.** A canceled Upgrade that already updated some resources will leave them in their new state; the chart's next deploy reconciles them. Cancellation is *don't start* and *attempt to stop*, not *undo*.
+- **Cancelling a task doesn't roll back partial work.** A canceled Upgrade that already updated some resources will leave them in their new state; the chart's next deploy reconciles them. Cancellation is _don't start_ and _attempt to stop_, not _undo_.

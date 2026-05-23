@@ -103,7 +103,7 @@ Cannot:
 
 ### Why two levels
 
-Owner is for the team that builds and ships the service. Maintainer is for the on-call rotation that operates it day-to-day. Same humans often, but with different "blast radius" responsibilities: Owners decide *what* should exist; Maintainers handle *what currently exists*.
+Owner is for the team that builds and ships the service. Maintainer is for the on-call rotation that operates it day-to-day. Same humans often, but with different "blast radius" responsibilities: Owners decide _what_ should exist; Maintainers handle _what currently exists_.
 
 For services that don't need this split (a chart your platform team owns end-to-end), grant Owner to everyone on the team and don't bother with Maintainer.
 
@@ -116,7 +116,7 @@ From `/envs/<env>/settings/deployment-permissions`:
 3. Pick a user or bot.
 4. Save.
 
-Permissions are additive. A user with both Owner *and* Maintainer on the same kind effectively has Owner (Maintainer adds nothing new). Permissions on different kinds are independent.
+Permissions are additive. A user with both Owner _and_ Maintainer on the same kind effectively has Owner (Maintainer adds nothing new). Permissions on different kinds are independent.
 
 ### Auto-grants vs explicit grants
 
@@ -134,13 +134,13 @@ A user can act on a deployment if, in order of priority:
 
 So:
 
-| User | Env role | Deployment role | Can upgrade `payments-api`? | Can delete it? |
-| --- | --- | --- | --- | --- |
-| Site admin | (any) | (any) | Yes | Yes |
-| Env admin on `prod` | Admin | (none) | Yes (env admin overrides) | Yes |
-| Env user on `prod` | User | (none) | No (no deployment role) | No |
-| Env user on `prod` | User | Maintainer on `payments-api` | Yes | No (Maintainer can't delete) |
-| Env user on `prod` | User | Owner on `payments-api` | Yes | Yes |
+| User                | Env role | Deployment role              | Can upgrade `payments-api`? | Can delete it?               |
+| ------------------- | -------- | ---------------------------- | --------------------------- | ---------------------------- |
+| Site admin          | (any)    | (any)                        | Yes                         | Yes                          |
+| Env admin on `prod` | Admin    | (none)                       | Yes (env admin overrides)   | Yes                          |
+| Env user on `prod`  | User     | (none)                       | No (no deployment role)     | No                           |
+| Env user on `prod`  | User     | Maintainer on `payments-api` | Yes                         | No (Maintainer can't delete) |
+| Env user on `prod`  | User     | Owner on `payments-api`      | Yes                         | Yes                          |
 
 ## Bots and permissions
 
@@ -153,7 +153,7 @@ It can create, upgrade, and delete its own deployments, but can't touch any othe
 
 ## Caveats
 
-- **The matrix doesn't have a "global" cell.** You can't grant Owner on *all* deployment kinds in one click — it's per kind. For env-wide grants, use env-level Admin (which is a superpower; use sparingly).
-- **Removing an env user doesn't remove their deployment-level roles.** It just removes their env-level row. They lose visibility into the env (so the deployment rows are unreachable for them anyway), but the deployment_permissions rows persist. Re-adding them re-exposes their old deployment grants. This is intentional for "vacation mode" — remove and re-add without losing fine-grained permissions. But it's a sharp edge: a user removed for cause should be removed *and* have their deployment grants cleaned up.
+- **The matrix doesn't have a "global" cell.** You can't grant Owner on _all_ deployment kinds in one click — it's per kind. For env-wide grants, use env-level Admin (which is a superpower; use sparingly).
+- **Removing an env user doesn't remove their deployment-level roles.** It just removes their env-level row. They lose visibility into the env (so the deployment rows are unreachable for them anyway), but the deployment*permissions rows persist. Re-adding them re-exposes their old deployment grants. This is intentional for "vacation mode" — remove and re-add without losing fine-grained permissions. But it's a sharp edge: a user removed for cause should be removed \_and* have their deployment grants cleaned up.
 - **There's no role inheritance across kinds.** Owner on kind `foo` doesn't grant Owner on kind `bar`. Manage them independently.
 - **The first time you grant a permission to a new user, they need to log in once first.** Platz can only grant permissions to users that exist in the database, and users are auto-created on first OIDC login.

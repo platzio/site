@@ -12,17 +12,17 @@ This page is the user-facing tour: what a deployment consists of, what the deplo
 
 Every deployment has:
 
-| Property | What it is |
-| --- | --- |
-| **Name** | A DNS-safe identifier (lowercase letters, digits, hyphens). It becomes the deployment's Kubernetes namespace name (after the chart's own naming logic) and influences its hostname. For `cardinality: OnePerCluster` charts, the name is implicit and equals the kind name. |
-| **Kind** | The category, set by the registry the chart came from. You usually have one kind per service: `payments-api`, `shop-frontend`, `redis`, etc. |
-| **Cluster** | The Kubernetes cluster the release lives in. Set at creation; can be changed later via the Recreate task. |
-| **Chart version** | The specific `image_tag` of the Helm chart currently installed. Drives the chart's templates and the available config inputs. |
-| **Config** | A JSON blob of the user-form values. Shown in the UI as a typed form generated from the chart's `values-ui.yaml`. |
-| **Values Override** | An optional raw-YAML block that gets layered on top of the generated config. Owner-only; the escape hatch for things the form can't express. |
-| **Description** | Free-form Markdown. A place to put runbook links, on-call info, dependencies — whatever the team wants. |
-| **Enabled flag** | When `false`, the deployment is uninstalled from Kubernetes but its config and history remain in Platz. Re-enabling reinstalls it. |
-| **Reported status** | Optional structured status reported by the chart's pods via the [Status feature](/docs/guide/deployments/status). Drives the badges, notices, and metrics on the overview tab. |
+| Property            | What it is                                                                                                                                                                                                                                                                  |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Name**            | A DNS-safe identifier (lowercase letters, digits, hyphens). It becomes the deployment's Kubernetes namespace name (after the chart's own naming logic) and influences its hostname. For `cardinality: OnePerCluster` charts, the name is implicit and equals the kind name. |
+| **Kind**            | The category, set by the registry the chart came from. You usually have one kind per service: `payments-api`, `shop-frontend`, `redis`, etc.                                                                                                                                |
+| **Cluster**         | The Kubernetes cluster the release lives in. Set at creation; can be changed later via the Recreate task.                                                                                                                                                                   |
+| **Chart version**   | The specific `image_tag` of the Helm chart currently installed. Drives the chart's templates and the available config inputs.                                                                                                                                               |
+| **Config**          | A JSON blob of the user-form values. Shown in the UI as a typed form generated from the chart's `values-ui.yaml`.                                                                                                                                                           |
+| **Values Override** | An optional raw-YAML block that gets layered on top of the generated config. Owner-only; the escape hatch for things the form can't express.                                                                                                                                |
+| **Description**     | Free-form Markdown. A place to put runbook links, on-call info, dependencies — whatever the team wants.                                                                                                                                                                     |
+| **Enabled flag**    | When `false`, the deployment is uninstalled from Kubernetes but its config and history remain in Platz. Re-enabling reinstalls it.                                                                                                                                          |
+| **Reported status** | Optional structured status reported by the chart's pods via the [Status feature](/docs/guide/deployments/status). Drives the badges, notices, and metrics on the overview tab.                                                                                              |
 
 ## The deployment list
 
@@ -78,15 +78,15 @@ A paginated log of every task that's ever been run against this deployment. Newe
 
 Top-right of every deployment page, listed roughly in this order:
 
-| Action | Visible when |
-| --- | --- |
+| Action                                              | Visible when                                                                                                           |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Custom actions (from chart's `actions-schema.yaml`) | Chart has actions defined, user is maintainer+, deployment's current status matches the action's `allowed_on_statuses` |
-| **Open Logs** (Grafana) | Cluster has Grafana URL and Loki datasource configured |
-| **Edit Deployment** | Maintainer+ |
-| **Clone From Deployment** | Maintainer+ |
-| **Edit Description** | Maintainer+ |
-| **Enable** / **Disable** | Owner+ |
-| **Delete** | Owner+ |
+| **Open Logs** (Grafana)                             | Cluster has Grafana URL and Loki datasource configured                                                                 |
+| **Edit Deployment**                                 | Maintainer+                                                                                                            |
+| **Clone From Deployment**                           | Maintainer+                                                                                                            |
+| **Edit Description**                                | Maintainer+                                                                                                            |
+| **Enable** / **Disable**                            | Owner+                                                                                                                 |
+| **Delete**                                          | Owner+                                                                                                                 |
 
 If your role doesn't give you access to the actions you'd expect to see, check [Permissions](/docs/guide/envs/permissions).
 
@@ -134,7 +134,7 @@ Disabled deployments don't accrue helm operations or trigger any tasks, but they
 
 ## Deleting
 
-**Actions → Delete** uninstalls *and* removes the deployment row. Cascade deletes its tasks, resources, and resource references.
+**Actions → Delete** uninstalls _and_ removes the deployment row. Cascade deletes its tasks, resources, and resource references.
 
 Deletion is permanent. The audit trail (who deployed what when) goes with it. If you want the audit history preserved, disable instead of delete.
 

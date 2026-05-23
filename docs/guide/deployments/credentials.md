@@ -97,7 +97,7 @@ In production, leave the variable unset (default: enabled).
 
 ## When the token expires
 
-Currently 1 hour. After expiration, the chart's pod can't make new authenticated calls to Platz, and Platz's status poller stops trusting calls from the pod (though Platz's poller is the *caller* there, so what matters is the token Platz includes in its request, not the one the pod has).
+Currently 1 hour. After expiration, the chart's pod can't make new authenticated calls to Platz, and Platz's status poller stops trusting calls from the pod (though Platz's poller is the _caller_ there, so what matters is the token Platz includes in its request, not the one the pod has).
 
 In practice this means:
 
@@ -108,7 +108,7 @@ If your chart needs persistent outbound Platz calls, build refresh logic into it
 
 ## What about user credentials for the chart's UI?
 
-This page covers the *deployment's* credentials — the bot-like identity Platz gives the chart's pods. The chart can also serve its own UI to human users, and that's a totally separate authentication concern: typically the chart hands off to the same OIDC provider Platz uses, with its own client ID.
+This page covers the _deployment's_ credentials — the bot-like identity Platz gives the chart's pods. The chart can also serve its own UI to human users, and that's a totally separate authentication concern: typically the chart hands off to the same OIDC provider Platz uses, with its own client ID.
 
 If you want the chart's UI to know which Platz user is talking to it, the chart's UI can call Platz's `/api/v2/users/me` with the user's session token — but that requires forwarding the session, which is non-trivial. Most charts just use their own auth and accept that the chart's UI and Platz's UI are two separate sessions.
 

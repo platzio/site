@@ -226,7 +226,7 @@ spec:
 
 - **`display.name` is purely cosmetic.** The deployment's actual name (used in URLs, in Helm release naming, in DNS) doesn't change. If you want different display vs technical names, this is the knob.
 - **`display.icon` font_awesome name is the class name without the `fa-` prefix.** A common mistake.
-- **`OnePerCluster` enforcement is at deployment-create time.** If you change a chart from `Many` to `OnePerCluster` while multiple instances already exist, the existing instances keep running. The constraint only blocks *new* creates.
+- **`OnePerCluster` enforcement is at deployment-create time.** If you change a chart from `Many` to `OnePerCluster` while multiple instances already exist, the existing instances keep running. The constraint only blocks _new_ creates.
 - **Status polling without ingress is silent.** If you enable Status but not Ingress, no polling happens, and the UI shows no status. There's no warning.
 - **`node_selector_paths` overwrites, not merges.** If your chart's `values.yaml` has its own node selector under `postgresql.primary.nodeSelector`, listing that path in `node_selector_paths` replaces it with the env's selector at install time. Chart authors should choose: either the chart owns the selector, or Platz does, not both.
 - **The `v0` features.json (legacy) uses snake_case fields** (`standard_ingress`, `node_selector_paths`). The modern v1beta1/v1beta2 YAML format uses camelCase wrapper kinds but mostly preserves snake_case for the leaf fields (`hostname_format`, `refresh_interval_secs`). Inconsistent but historical.

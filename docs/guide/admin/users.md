@@ -45,15 +45,15 @@ There's no "delete user" action. Deactivation is the only way to revoke access â
 
 The two are deliberately separate concerns:
 
-| | Site admin | Env admin |
-| --- | --- | --- |
-| Flag on | `users.is_admin` (boolean) | Row in `env_user_permissions` with role `Admin` |
-| Granted by | Another site admin (or `ADMIN_EMAILS` at first login) | An env admin or a site admin |
-| Can manage users | Yes (activate/deactivate, change global role) | Only env-level (add/remove users from this env) |
-| Can manage clusters | Yes | No (can attach existing clusters to their env via env settings, but can't register new ones) |
-| Can manage bots | Yes (all bots) | No |
-| Can see all envs | Yes | No (only envs they're granted access to) |
-| Can edit env config | Yes | Yes, but only on their envs |
+|                     | Site admin                                            | Env admin                                                                                    |
+| ------------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Flag on             | `users.is_admin` (boolean)                            | Row in `env_user_permissions` with role `Admin`                                              |
+| Granted by          | Another site admin (or `ADMIN_EMAILS` at first login) | An env admin or a site admin                                                                 |
+| Can manage users    | Yes (activate/deactivate, change global role)         | Only env-level (add/remove users from this env)                                              |
+| Can manage clusters | Yes                                                   | No (can attach existing clusters to their env via env settings, but can't register new ones) |
+| Can manage bots     | Yes (all bots)                                        | No                                                                                           |
+| Can see all envs    | Yes                                                   | No (only envs they're granted access to)                                                     |
+| Can edit env config | Yes                                                   | Yes, but only on their envs                                                                  |
 
 A site admin can do anything an env admin can do, in any env. The reverse is not true.
 
@@ -72,7 +72,7 @@ If you do this often, set `auto_add_new_users: true` on the env you usually want
 
 When someone leaves:
 
-1. Their IdP account is disabled (your security team's job). This prevents *new* OIDC logins from succeeding.
+1. Their IdP account is disabled (your security team's job). This prevents _new_ OIDC logins from succeeding.
 2. A site admin deactivates their Platz user at `/admin/users`. This invalidates any browser session and any user tokens they have.
 
 The IdP disable alone isn't enough â€” Platz's session JWT is independent of the IdP token, so a deactivated user with a valid Platz JWT could keep using the system for up to 7 days. Always deactivate the Platz user too.
