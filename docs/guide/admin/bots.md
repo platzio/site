@@ -82,10 +82,10 @@ A few rules of thumb that scale well:
 
 Every `deployment_task` records who triggered it via one of three nullable columns:
 
-| Column | Set when |
-| --- | --- |
-| `acting_user_id` | A human (using either a browser session or a personal user token) triggered the task. |
-| `acting_bot_id` | A bot's token was used. |
+| Column                 | Set when                                                                                                             |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `acting_user_id`       | A human (using either a browser session or a personal user token) triggered the task.                                |
+| `acting_bot_id`        | A bot's token was used.                                                                                              |
 | `acting_deployment_id` | A deployment triggered the task on another deployment (e.g. an `InvokeAction` from a chart's `actions-schema.yaml`). |
 
 The History tab in the UI surfaces all three. Filter by `acting_bot_id` when you want to audit a specific bot's activity, or by `acting_deployment_id` when you want to trace cross-deployment side effects.

@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Authentication
 
-Platz delegates user authentication to an external **OpenID Connect** provider. There is no built-in user store, no password reset flow, no MFA management — those concerns belong to your IdP (Auth0, Keycloak, Okta, Dex, Google Workspace via an OIDC bridge, GitHub via an OIDC bridge, etc.). Platz only deals with what happens *after* the IdP says "yes, this is so-and-so".
+Platz delegates user authentication to an external **OpenID Connect** provider. There is no built-in user store, no password reset flow, no MFA management — those concerns belong to your IdP (Auth0, Keycloak, Okta, Dex, Google Workspace via an OIDC bridge, GitHub via an OIDC bridge, etc.). Platz only deals with what happens _after_ the IdP says "yes, this is so-and-so".
 
 This page covers how OIDC is configured, what happens on first login, how admin promotion works, and the two flavours of machine-to-machine tokens (user tokens vs bot tokens).
 
@@ -12,12 +12,12 @@ This page covers how OIDC is configured, what happens on first login, how admin 
 
 Platz reads four OIDC settings, all required:
 
-| Setting | Source | What it is |
-| --- | --- | --- |
-| `OIDC_SERVER_URL` | `oidc-config` secret, key `serverUrl` | The OIDC issuer URL. Platz appends `/.well-known/openid-configuration` to fetch the provider's metadata. |
-| `OIDC_CLIENT_ID` | `oidc-config` secret, key `clientId` | The OAuth 2.0 client identifier for Platz in your IdP. |
-| `OIDC_CLIENT_SECRET` | `oidc-config` secret, key `clientSecret` | The OAuth 2.0 client secret. |
-| `PLATZ_OWN_URL` | Helm value `ownUrlOverride`, or derived from `ingress.rules[0].host` | The base URL Platz advertises to itself. Used to construct the OIDC redirect URI and the URLs Platz hands to deployments. |
+| Setting              | Source                                                               | What it is                                                                                                                |
+| -------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `OIDC_SERVER_URL`    | `oidc-config` secret, key `serverUrl`                                | The OIDC issuer URL. Platz appends `/.well-known/openid-configuration` to fetch the provider's metadata.                  |
+| `OIDC_CLIENT_ID`     | `oidc-config` secret, key `clientId`                                 | The OAuth 2.0 client identifier for Platz in your IdP.                                                                    |
+| `OIDC_CLIENT_SECRET` | `oidc-config` secret, key `clientSecret`                             | The OAuth 2.0 client secret.                                                                                              |
+| `PLATZ_OWN_URL`      | Helm value `ownUrlOverride`, or derived from `ingress.rules[0].host` | The base URL Platz advertises to itself. Used to construct the OIDC redirect URI and the URLs Platz hands to deployments. |
 
 The first three live in a Kubernetes Secret (default name `oidc-config`) referenced by the chart via `valueFrom.secretKeyRef`. This keeps them out of your values.yaml. See [Installing with Helm](/docs/guide/install/helm) for the create-the-secret commands.
 
@@ -60,7 +60,7 @@ The `auth.adminEmails` chart value becomes the `ADMIN_EMAILS` env var (a space-d
 - **Match** → the user is created with `is_admin=true` and `is_active=true`. They go straight to the admin area.
 - **No match** → the user is created with `is_admin=false` and `is_active=false`. They see an "Inactive user" splash and can't do anything until a site admin activates them.
 
-This rule applies **at signup time only**. Removing an email from `ADMIN_EMAILS` after the user already exists does *not* demote them. To revoke admin, edit the user from `/admin/users` (the "Change Global Role" action).
+This rule applies **at signup time only**. Removing an email from `ADMIN_EMAILS` after the user already exists does _not_ demote them. To revoke admin, edit the user from `/admin/users` (the "Change Global Role" action).
 
 ### Auto-add to envs
 
@@ -119,13 +119,13 @@ See [Bots](/docs/guide/admin/bots) for the full workflow including env permissio
 
 ## Browser sessions vs API tokens
 
-| | Browser session | User token | Bot token |
-| --- | --- | --- | --- |
-| Auth header | Cookie (set by `/auth/google/callback`) | `x-platz-token` | `x-platz-token` |
-| Validity | 7 days from OIDC login | Until revoked | Until revoked |
-| Scope | All of user's permissions | All of user's permissions | The bot's env permissions |
-| Tied to a human? | Yes | Yes | No |
-| Visible to API consumers as | `acting_user_id` | `acting_user_id` | `acting_bot_id` |
+|                             | Browser session                         | User token                | Bot token                 |
+| --------------------------- | --------------------------------------- | ------------------------- | ------------------------- |
+| Auth header                 | Cookie (set by `/auth/google/callback`) | `x-platz-token`           | `x-platz-token`           |
+| Validity                    | 7 days from OIDC login                  | Until revoked             | Until revoked             |
+| Scope                       | All of user's permissions               | All of user's permissions | The bot's env permissions |
+| Tied to a human?            | Yes                                     | Yes                       | No                        |
+| Visible to API consumers as | `acting_user_id`                        | `acting_user_id`          | `acting_bot_id`           |
 
 Audit log entries (`deployment_tasks.acting_user_id` / `acting_bot_id` / `acting_deployment_id`) make it possible to distinguish "Alice manually upgraded this" from "the CI bot upgraded this" from "the parent deployment triggered a child deployment via Invoke Action".
 
@@ -141,4 +141,4 @@ Most often: the redirect URI configured in your IdP doesn't match `https://<PLAT
 The token is wrong, revoked, or the user/bot is inactive. Try the same token in `curl` against `/api/v2/users/me` — that endpoint will give a clearer error message than most.
 
 **JWT works in browser but not in API client.**
-The browser sends the session as a cookie. API clients should use a user token or bot token via `x-platz-token`, *not* the cookie value. The two formats are different.
+The browser sends the session as a cookie. API clients should use a user token or bot token via `x-platz-token`, _not_ the cookie value. The two formats are different.

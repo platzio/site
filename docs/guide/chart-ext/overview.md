@@ -37,10 +37,10 @@ Each file is independent: include only the ones you need. A chart that just want
 
 Platz supports two file-naming schemes:
 
-| Scheme | Location | apiVersion | Status |
-| --- | --- | --- | --- |
-| **Modern** | `platz/values-ui.yaml`, `platz/features.yaml`, `platz/actions.yaml`, `platz/resources.yaml` | `platz.io/v1beta1` or `platz.io/v1beta2` (features only) | Current. Use for new charts. |
-| **Legacy** | `values.ui.json`, `features.json`, `actions.schema.json` (at chart root) | None — implicit | Supported for backwards compatibility. JSON only. |
+| Scheme     | Location                                                                                    | apiVersion                                               | Status                                            |
+| ---------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------- |
+| **Modern** | `platz/values-ui.yaml`, `platz/features.yaml`, `platz/actions.yaml`, `platz/resources.yaml` | `platz.io/v1beta1` or `platz.io/v1beta2` (features only) | Current. Use for new charts.                      |
+| **Legacy** | `values.ui.json`, `features.json`, `actions.schema.json` (at chart root)                    | None — implicit                                          | Supported for backwards compatibility. JSON only. |
 
 If a chart has a `platz/` directory, Platz reads from it exclusively — legacy files at the chart root are ignored. So you can't mix the two; pick one.
 
@@ -88,7 +88,7 @@ When a user creates a deployment of this chart, they see a single form field lab
 
 The form gets more useful as you add inputs — text fields for hostnames, checkboxes for feature flags, `CollectionSelect` dropdowns for picking env secrets, conditional `showIf` rules to hide irrelevant fields.
 
-## What the extension files *can't* do
+## What the extension files _can't_ do
 
 The chart-extension system is opinionated. Things it deliberately doesn't support:
 

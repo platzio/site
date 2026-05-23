@@ -65,11 +65,11 @@ The single most important setting: which env this cluster belongs to.
 
 Per-cluster ingress configuration that feeds the [Standard Ingress feature](/docs/guide/chart-ext/features#ingress). Three fields:
 
-| Field | Example | What it does |
-| --- | --- | --- |
-| `ingress_domain` | `platz.example.com` | The base domain. Deployment hostnames are constructed as `<deployment>.<domain>` or `<kind>-<deployment>.<domain>` (controlled by the chart's `hostname_format`). |
-| `ingress_class` | `nginx` | The `ingressClassName` to set on the auto-generated Ingress resource. Needs to match a controller installed in that cluster. |
-| `ingress_tls_secret_name` | `letsencrypt-prod` | The name of the TLS secret to reference. The secret must exist in the *deployment's* namespace — usually managed by cert-manager via a wildcard `Certificate` plus `kubed`-style replication, or by hand. |
+| Field                     | Example             | What it does                                                                                                                                                                                              |
+| ------------------------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ingress_domain`          | `platz.example.com` | The base domain. Deployment hostnames are constructed as `<deployment>.<domain>` or `<kind>-<deployment>.<domain>` (controlled by the chart's `hostname_format`).                                         |
+| `ingress_class`           | `nginx`             | The `ingressClassName` to set on the auto-generated Ingress resource. Needs to match a controller installed in that cluster.                                                                              |
+| `ingress_tls_secret_name` | `letsencrypt-prod`  | The name of the TLS secret to reference. The secret must exist in the _deployment's_ namespace — usually managed by cert-manager via a wildcard `Certificate` plus `kubed`-style replication, or by hand. |
 
 All three are optional. If `ingress_domain` is unset, the Standard Ingress feature is a no-op on that cluster — even charts that enable it won't get an ingress. If `ingress_tls_secret_name` is unset, the ingress will be HTTP-only.
 

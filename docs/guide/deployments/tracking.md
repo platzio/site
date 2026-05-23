@@ -42,18 +42,18 @@ This is what keeps the Resources tab in the UI accurate after a Kubernetes objec
 
 ## What's tracked vs not tracked
 
-| Kubernetes resource | Tracked? | Where it shows up |
-| --- | --- | --- |
-| Namespace | Yes (existence and label) | Deployment status, used as the deployment-namespace anchor |
-| Deployment (`apps/v1`) | Yes (full status) | Resources tab |
-| StatefulSet | Yes (full status) | Resources tab |
-| Job | Yes (status, but completed jobs are filtered out of the Resources tab) | Internal — used to track one-shot operations |
-| Pod | Yes (status, names) | Resources tab — surfaced as children of the parent Deployment/StatefulSet |
-| Service | No | Use `kubectl` |
-| ConfigMap | No | Use `kubectl` |
-| Secret | No (Platz creates them but doesn't track their state) | The deployment's namespace |
-| Ingress | No | The deployment's namespace |
-| Anything custom (CRDs) | No (Platz doesn't know about them) | The deployment's namespace |
+| Kubernetes resource    | Tracked?                                                               | Where it shows up                                                         |
+| ---------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Namespace              | Yes (existence and label)                                              | Deployment status, used as the deployment-namespace anchor                |
+| Deployment (`apps/v1`) | Yes (full status)                                                      | Resources tab                                                             |
+| StatefulSet            | Yes (full status)                                                      | Resources tab                                                             |
+| Job                    | Yes (status, but completed jobs are filtered out of the Resources tab) | Internal — used to track one-shot operations                              |
+| Pod                    | Yes (status, names)                                                    | Resources tab — surfaced as children of the parent Deployment/StatefulSet |
+| Service                | No                                                                     | Use `kubectl`                                                             |
+| ConfigMap              | No                                                                     | Use `kubectl`                                                             |
+| Secret                 | No (Platz creates them but doesn't track their state)                  | The deployment's namespace                                                |
+| Ingress                | No                                                                     | The deployment's namespace                                                |
+| Anything custom (CRDs) | No (Platz doesn't know about them)                                     | The deployment's namespace                                                |
 
 If you need to see anything Platz doesn't track, the Open Logs Grafana link (see [Logs](/docs/guide/admin/logs)) usually gives you enough context. For arbitrary `kubectl` access, you'll need direct cluster credentials.
 
@@ -61,16 +61,16 @@ If you need to see anything Platz doesn't track, the Open Logs Grafana link (see
 
 Every Platz `deployment` has a `status` enum that's set by the deployment's state in the cluster (plus, optionally, the [reported status](/docs/guide/deployments/status) from the chart's pods):
 
-| Status | When |
-| --- | --- |
-| `Installing` | An Install task is in flight |
-| `Upgrading` | An Upgrade task is in flight |
-| `Running` | Helm install finished successfully and the chart's primary workload is healthy |
-| `Pending` | Created but no task has finished yet |
-| `Error` | The last task failed; the deployment is in an indeterminate state |
-| `Uninstalling` | An Uninstall task is in flight |
-| `Disabled` | Deployment is disabled (`enabled: false`) |
-| `Unknown` | Tracker hasn't seen the deployment recently or its namespace went missing unexpectedly |
+| Status         | When                                                                                   |
+| -------------- | -------------------------------------------------------------------------------------- |
+| `Installing`   | An Install task is in flight                                                           |
+| `Upgrading`    | An Upgrade task is in flight                                                           |
+| `Running`      | Helm install finished successfully and the chart's primary workload is healthy         |
+| `Pending`      | Created but no task has finished yet                                                   |
+| `Error`        | The last task failed; the deployment is in an indeterminate state                      |
+| `Uninstalling` | An Uninstall task is in flight                                                         |
+| `Disabled`     | Deployment is disabled (`enabled: false`)                                              |
+| `Unknown`      | Tracker hasn't seen the deployment recently or its namespace went missing unexpectedly |
 
 The badge color in the UI maps from this enum. The chart's own reported status (from the Status feature) is layered on top and surfaces as warnings/notices in the Overview tab.
 
@@ -119,7 +119,7 @@ The cleanup means the Resources tab is eventually consistent: you might briefly 
 
 ## Caveats
 
-- **No history.** Platz only knows about resources that *currently* exist (or recently existed). There's no "show me what pods this deployment had last week". Use your log/metric stack for that.
+- **No history.** Platz only knows about resources that _currently_ exist (or recently existed). There's no "show me what pods this deployment had last week". Use your log/metric stack for that.
 - **No CRD tracking.** Charts that create custom resources (e.g., Prometheus `ServiceMonitor`, ArgoCD `Application`) don't get those CRs reflected into Platz. If your chart depends on a CR being in the right state, write a status feature that polls it from inside the chart's own pod.
 - **Multi-namespace charts are not supported.** Platz assumes one chart = one namespace. Charts that try to create resources outside their own namespace work, but those resources won't show up in the Resources tab. Don't do this if you can avoid it.
 - **The label is load-bearing.** Removing `platz=yes` from a namespace effectively orphans the deployment from Platz's perspective. The Helm release still exists, but Platz stops tracking it. Re-adding the label re-enables tracking.

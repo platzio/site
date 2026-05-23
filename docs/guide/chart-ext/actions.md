@@ -57,19 +57,19 @@ Each action is its own resource. Add as many as you want.
 
 ## Spec fields
 
-| Field | Type | Required | Notes |
-| --- | --- | --- | --- |
-| `id` | string | Yes | Stable identifier. Used in API calls and audit logs. Don't change after release. |
-| `title` | string | Yes | Display label in the Actions menu. |
-| `description` | string | Yes | Shown in the confirmation modal. Explain what the action does. |
-| `fontawesome_icon` | string | No | Icon shown next to the title. FontAwesome class name without `fa-` prefix. |
-| `allowed_role` | enum | Yes | Minimum role to invoke. `Owner` or `Maintainer`. |
-| `allowed_on_statuses` | array of strings | No | Statuses where the action is selectable. If omitted, the action is always selectable. |
-| `dangerous` | boolean | No (default false) | If `true`, the confirmation modal uses a red "Yes, I'm sure" button. |
-| `endpoint` | enum | Yes | Where the HTTP request goes. Currently only `standard_ingress` is supported. |
-| `path` | string | Yes | The HTTP path appended to the deployment's standard ingress hostname. |
-| `method` | enum | Yes | HTTP method: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`. |
-| `ui_schema` | object | No | A mini values-ui schema for collecting inputs before invocation. |
+| Field                 | Type             | Required           | Notes                                                                                 |
+| --------------------- | ---------------- | ------------------ | ------------------------------------------------------------------------------------- |
+| `id`                  | string           | Yes                | Stable identifier. Used in API calls and audit logs. Don't change after release.      |
+| `title`               | string           | Yes                | Display label in the Actions menu.                                                    |
+| `description`         | string           | Yes                | Shown in the confirmation modal. Explain what the action does.                        |
+| `fontawesome_icon`    | string           | No                 | Icon shown next to the title. FontAwesome class name without `fa-` prefix.            |
+| `allowed_role`        | enum             | Yes                | Minimum role to invoke. `Owner` or `Maintainer`.                                      |
+| `allowed_on_statuses` | array of strings | No                 | Statuses where the action is selectable. If omitted, the action is always selectable. |
+| `dangerous`           | boolean          | No (default false) | If `true`, the confirmation modal uses a red "Yes, I'm sure" button.                  |
+| `endpoint`            | enum             | Yes                | Where the HTTP request goes. Currently only `standard_ingress` is supported.          |
+| `path`                | string           | Yes                | The HTTP path appended to the deployment's standard ingress hostname.                 |
+| `method`              | enum             | Yes                | HTTP method: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`.                                 |
+| `ui_schema`           | object           | No                 | A mini values-ui schema for collecting inputs before invocation.                      |
 
 ## How invocation works
 

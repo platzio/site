@@ -19,7 +19,7 @@ For a deployment to be Platz-managed, it must:
 The cleanest way to set this up is:
 
 1. **Push the chart to a Platz-connected registry** (see [Helm Registries](/docs/guide/admin/helm-registries)).
-2. **Create a new deployment** through the Platz UI with the same config as the existing release. Platz installs into a *fresh* namespace, not your existing one.
+2. **Create a new deployment** through the Platz UI with the same config as the existing release. Platz installs into a _fresh_ namespace, not your existing one.
 3. **Migrate stateful data** from the old namespace to the new one (database dump/restore, persistent volume snapshot, etc.).
 4. **Cut traffic over** to the new deployment.
 5. **`helm uninstall` the original release** and delete the old namespace.

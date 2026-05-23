@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Clusters
 
-Every env in Platz has a set of clusters attached to it. The cluster set is what an env user can deploy *into* — when you click "New Deployment" the cluster dropdown is filtered to the clusters attached to the current env.
+Every env in Platz has a set of clusters attached to it. The cluster set is what an env user can deploy _into_ — when you click "New Deployment" the cluster dropdown is filtered to the clusters attached to the current env.
 
 This page is the env-level perspective on clusters: what's already attached, what users can do with them, and the dotted line back to the site-level cluster admin page.
 

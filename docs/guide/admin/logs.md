@@ -24,10 +24,10 @@ That's it. The full responsibility for log retention, indexing, parsing, alertin
 
 The Grafana URL and Loki datasource name live on each cluster row. Configure from `/admin/clusters/<id>` → **Change Cluster Grafana Configuration**:
 
-| Field | Example | Notes |
-| --- | --- | --- |
-| Grafana URL | `https://grafana.example.com` | Base URL. Platz appends `/explore?...` to it. No trailing slash. |
-| Datasource name | `loki-prod-us-east-1` | The name as it appears in Grafana's Data Sources page — case-sensitive. |
+| Field           | Example                       | Notes                                                                   |
+| --------------- | ----------------------------- | ----------------------------------------------------------------------- |
+| Grafana URL     | `https://grafana.example.com` | Base URL. Platz appends `/explore?...` to it. No trailing slash.        |
+| Datasource name | `loki-prod-us-east-1`         | The name as it appears in Grafana's Data Sources page — case-sensitive. |
 
 When both fields are populated, the **Open Logs** action appears on every deployment in that cluster. If either is empty, the action is hidden.
 
@@ -56,12 +56,12 @@ There's currently no way to restrict the Open Logs action to a subset of Platz u
 
 Anything that supports URL-encoded queries in the address bar can work, but you'll need to ignore the "datasource name" semantics and treat the Grafana URL as a generic prefix:
 
-| Log stack | Link format you'd configure |
-| --- | --- |
-| Grafana + Loki | `https://grafana.example.com` + datasource name `loki` |
+| Log stack             | Link format you'd configure                                                                  |
+| --------------------- | -------------------------------------------------------------------------------------------- |
+| Grafana + Loki        | `https://grafana.example.com` + datasource name `loki`                                       |
 | OpenSearch Dashboards | Currently no native support; you'd need to either fork the frontend or post-process the link |
-| Datadog | Same — not natively supported |
-| CloudWatch Logs | Same |
+| Datadog               | Same — not natively supported                                                                |
+| CloudWatch Logs       | Same                                                                                         |
 
 The link format is hard-coded in the frontend, so anything other than Grafana + Loki requires a code change today. There's an open question about making the URL format pluggable; until then, Grafana is the path of least resistance.
 

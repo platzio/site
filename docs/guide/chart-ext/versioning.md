@@ -8,11 +8,11 @@ Chart Extension schemas have evolved over time. Platz supports three versions; t
 
 ## Version timeline
 
-| Version | apiVersion | File format | File location | Status |
-| --- | --- | --- | --- | --- |
-| **v0** | none (implicit) | JSON | chart root (`values.ui.json`, `actions.schema.json`, `features.json`) | Legacy. Maintained for backwards compatibility only. |
-| **v1beta1** | `platz.io/v1beta1` | YAML | `platz/` subdirectory (`platz/values-ui.yaml`, `platz/actions.yaml`, `platz/features.yaml`, `platz/resources.yaml`) | Stable. Default for most charts. |
-| **v1beta2** | `platz.io/v1beta2` | YAML | `platz/features.yaml` only — other files still use v1beta1 | The current latest, for charts that need the new ingress / display configuration. |
+| Version     | apiVersion         | File format | File location                                                                                                       | Status                                                                            |
+| ----------- | ------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| **v0**      | none (implicit)    | JSON        | chart root (`values.ui.json`, `actions.schema.json`, `features.json`)                                               | Legacy. Maintained for backwards compatibility only.                              |
+| **v1beta1** | `platz.io/v1beta1` | YAML        | `platz/` subdirectory (`platz/values-ui.yaml`, `platz/actions.yaml`, `platz/features.yaml`, `platz/resources.yaml`) | Stable. Default for most charts.                                                  |
+| **v1beta2** | `platz.io/v1beta2` | YAML        | `platz/features.yaml` only — other files still use v1beta1                                                          | The current latest, for charts that need the new ingress / display configuration. |
 
 Note that **only `features.yaml` has a v1beta2** — the other files haven't needed schema changes since v1beta1.
 

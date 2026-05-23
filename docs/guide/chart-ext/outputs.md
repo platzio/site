@@ -63,7 +63,7 @@ Use for plain inputs (text, number, checkbox), array inputs (the entire array la
 
 ### `FieldProperty`
 
-Extracts a single property from a CollectionSelect input. Used when the user picks a *thing* (a deployment, a resource, a secret) and you want a specific attribute of that thing rather than its identifier.
+Extracts a single property from a CollectionSelect input. Used when the user picks a _thing_ (a deployment, a resource, a secret) and you want a specific attribute of that thing rather than its identifier.
 
 ```yaml
 - path: [config, database, hostname]
@@ -111,11 +111,11 @@ The exact list depends on the chart-ext crate version. Refer to `platz_chart_ext
 
 Paths are arrays of strings. Most strings are object keys, but a few special tokens manipulate arrays:
 
-| Token | Meaning |
-| --- | --- |
-| `<key>` | Object key — descend into the object at that key, creating an empty object if it doesn't exist. |
-| `"[N]"` | Array index (N is a number) — index into an array, creating empty entries up to N. |
-| `"[+]"` | Append — add a new element at the end of the array. Each `[+]` in the same output sequence creates a new element. |
+| Token   | Meaning                                                                                                                  |
+| ------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `<key>` | Object key — descend into the object at that key, creating an empty object if it doesn't exist.                          |
+| `"[N]"` | Array index (N is a number) — index into an array, creating empty entries up to N.                                       |
+| `"[+]"` | Append — add a new element at the end of the array. Each `[+]` in the same output sequence creates a new element.        |
 | `"[=]"` | Reference last appended element — descend into the most recently appended element (or create one if the array is empty). |
 
 The bracket tokens **must be quoted** in YAML — `"[+]"`, not `[+]` (the latter is YAML flow sequence syntax).
@@ -183,7 +183,7 @@ Secret values are always serialized to strings. If the source is a number, it's 
 
 ### Optional secrets
 
-If a secret entry's source input is hidden (via `showIf`) and not required, the corresponding key is skipped — but the Secret itself is still created if any other key resolved. If *all* keys are skipped, the Secret is not created at all (Platz doesn't emit empty Kubernetes Secrets).
+If a secret entry's source input is hidden (via `showIf`) and not required, the corresponding key is skipped — but the Secret itself is still created if any other key resolved. If _all_ keys are skipped, the Secret is not created at all (Platz doesn't emit empty Kubernetes Secrets).
 
 This means you can conditionally include keys:
 
@@ -279,6 +279,6 @@ What happens at install time:
 - **Outputs that reference hidden inputs silently skip.** No error, no warning — the output just isn't produced. This is the right behavior for conditional outputs but a footgun for typos: if you write `input: hostnam` (missing the `e`), the output is "skipped because input not provided" rather than a clear error.
 - **Numeric values become strings in secrets.** A `number` input wired into `outputs.secrets` ends up as `"5"` not `5`. The chart's pod reads it as a string regardless.
 - **Path components are strings, not paths.** Don't write `path: ["a.b.c"]` expecting Platz to split on dots — it won't. Use `path: [a, b, c]`.
-- **The default Helm `values.yaml` is still in effect.** Outputs don't replace `values.yaml` — they're a layer applied on top. If your chart has a default value at `replicaCount: 1` in `values.yaml` and your outputs don't write to that path, the chart sees `replicaCount: 1`. Outputs *override* defaults where they're written; they don't *replace* the whole values tree.
+- **The default Helm `values.yaml` is still in effect.** Outputs don't replace `values.yaml` — they're a layer applied on top. If your chart has a default value at `replicaCount: 1` in `values.yaml` and your outputs don't write to that path, the chart sees `replicaCount: 1`. Outputs _override_ defaults where they're written; they don't _replace_ the whole values tree.
 - **`values_override` runs after outputs.** The owner's raw YAML override sits on top of everything. If an override sets `database.host: <something>`, it wins over the FieldProperty resolution. This is the design — it's the escape hatch.
 - **Secret values can't reference other secrets.** A `FieldProperty` of a secret extracts the secret's value, full stop. You can't chain (e.g., reference a secret whose value names another secret). Resolve fully in one step.

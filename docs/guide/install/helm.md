@@ -9,7 +9,7 @@ Platz ships as a single Helm chart that installs five backend workers (API, k8s-
 - A **PostgreSQL** database you bring (the chart no longer bundles a Postgres dependency).
 - An **OIDC provider** for user authentication (Auth0, Keycloak, Dex, Google, GitHub via an OIDC bridge — anything that speaks OpenID Connect).
 - One or more **Helm OCI registries** that hold the charts users will deploy (ECR and any registry implementing the OCI Distribution Spec are both supported).
-- One or more **Kubernetes clusters** that Platz will deploy into. The cluster you install Platz onto is *not* automatically a deployment target — you register clusters explicitly via the `k8sAgent.instances[]` configuration.
+- One or more **Kubernetes clusters** that Platz will deploy into. The cluster you install Platz onto is _not_ automatically a deployment target — you register clusters explicitly via the `k8sAgent.instances[]` configuration.
 
 This page walks through a complete install. If you just want to bring Platz up locally on a kind cluster for development, see [platzio/dev](https://github.com/platzio/dev) — it scripts the whole thing with Tilt and an in-cluster Postgres + Dex + OCI registry.
 
@@ -36,13 +36,13 @@ The rest of this page assumes `platzio` as the namespace name. If you use someth
 
 Platz reads the database credentials from a Kubernetes Secret whose name is configured by `database.secretName` (default: `postgres-creds`). The secret must contain five keys:
 
-| Key | Example | Notes |
-| --- | --- | --- |
-| `PGHOST` | `platz-db.cluster-abc123.us-east-1.rds.amazonaws.com` | Hostname only. No port, no `postgres://` prefix. |
-| `PGPORT` | `5432` | Standard libpq env var. |
-| `PGUSER` | `platz` | Database user with full privileges on the database. |
-| `PGPASSWORD` | `your-password` | Stored as-is in the secret. |
-| `PGDATABASE` | `platz` | The database name. Platz writes its tables here. |
+| Key          | Example                                               | Notes                                               |
+| ------------ | ----------------------------------------------------- | --------------------------------------------------- |
+| `PGHOST`     | `platz-db.cluster-abc123.us-east-1.rds.amazonaws.com` | Hostname only. No port, no `postgres://` prefix.    |
+| `PGPORT`     | `5432`                                                | Standard libpq env var.                             |
+| `PGUSER`     | `platz`                                               | Database user with full privileges on the database. |
+| `PGPASSWORD` | `your-password`                                       | Stored as-is in the secret.                         |
+| `PGDATABASE` | `platz`                                               | The database name. Platz writes its tables here.    |
 
 ```bash
 kubectl -n platzio create secret generic postgres-creds \
@@ -59,11 +59,11 @@ These five values are injected as environment variables into every Platz pod tha
 
 The OIDC client credentials live in their own secret, separate from the database one, so you can rotate them independently. Default secret name: `oidc-config`. Three keys:
 
-| Key | Example | Notes |
-| --- | --- | --- |
-| `serverUrl` | `https://auth.example.com/realms/platz` | The OIDC issuer URL. Platz appends `/.well-known/openid-configuration` to discover the endpoints. |
-| `clientId` | `platz` | OAuth 2.0 client ID. |
-| `clientSecret` | `your-secret` | OAuth 2.0 client secret. |
+| Key            | Example                                 | Notes                                                                                             |
+| -------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `serverUrl`    | `https://auth.example.com/realms/platz` | The OIDC issuer URL. Platz appends `/.well-known/openid-configuration` to discover the endpoints. |
+| `clientId`     | `platz`                                 | OAuth 2.0 client ID.                                                                              |
+| `clientSecret` | `your-secret`                           | OAuth 2.0 client secret.                                                                          |
 
 ```bash
 kubectl -n platzio create secret generic oidc-config \
@@ -133,15 +133,15 @@ Save it as `platz-values.yaml`.
 
 You can get away with very little if you don't care about ingress and TLS:
 
-| Section | Required? | Why |
-| --- | --- | --- |
-| `auth.adminEmails` | Strongly recommended | If empty, no one gets promoted to site admin and the first user to log in will land in a useless inactive state. You can also activate users manually via a SQL update, but this is the easy path. |
-| OIDC secret | Yes | Users can't log in otherwise. |
-| Postgres secret | Yes | The API crashes immediately at startup if it can't connect. |
-| `k8sAgent.instances` | At least one entry | Without an agent instance, no deployment tasks ever run. |
-| `chartDiscovery.instances` | At least one entry, with valid config | Without chart discovery, no charts are ever ingested, and users see an empty list. |
-| `ingress.enabled` | Optional | If you don't enable it, expose the `platz-platzio-api` and `platz-platzio-frontend` services some other way (NodePort, LoadBalancer, port-forward for testing). |
-| `ownUrlOverride` | Optional | If you're skipping ingress entirely, set this to the externally reachable URL — it's the URL Platz uses when constructing OIDC callback redirects and emitting Status feature URLs. |
+| Section                    | Required?                             | Why                                                                                                                                                                                                |
+| -------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `auth.adminEmails`         | Strongly recommended                  | If empty, no one gets promoted to site admin and the first user to log in will land in a useless inactive state. You can also activate users manually via a SQL update, but this is the easy path. |
+| OIDC secret                | Yes                                   | Users can't log in otherwise.                                                                                                                                                                      |
+| Postgres secret            | Yes                                   | The API crashes immediately at startup if it can't connect.                                                                                                                                        |
+| `k8sAgent.instances`       | At least one entry                    | Without an agent instance, no deployment tasks ever run.                                                                                                                                           |
+| `chartDiscovery.instances` | At least one entry, with valid config | Without chart discovery, no charts are ever ingested, and users see an empty list.                                                                                                                 |
+| `ingress.enabled`          | Optional                              | If you don't enable it, expose the `platz-platzio-api` and `platz-platzio-frontend` services some other way (NodePort, LoadBalancer, port-forward for testing).                                    |
+| `ownUrlOverride`           | Optional                              | If you're skipping ingress entirely, set this to the externally reachable URL — it's the URL Platz uses when constructing OIDC callback redirects and emitting Status feature URLs.                |
 
 ## Step 6 — Install
 

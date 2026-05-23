@@ -21,16 +21,16 @@ You install Platz once into a Kubernetes cluster, point it at one or more regist
 
 ## Core concepts at a glance
 
-| Concept | What it is |
-| --- | --- |
-| **Env** | A logical grouping of clusters and the deployments that run on them. Roles are assigned per env. |
-| **Cluster** | A Kubernetes cluster registered with Platz. A cluster is attached to at most one env. |
-| **Deployment Kind** | A category of deployments — usually one per service. Multiple Helm registries can map to the same kind. |
-| **Deployment** | A single Helm release Platz manages. Lives in its own namespace inside a cluster. |
-| **Helm Registry** | An OCI registry (ECR or generic) that Platz scans for charts. |
-| **Chart Extension** | Optional YAML files that ship inside a Helm chart and give Platz richer inputs, outputs, status, and actions. |
-| **Task** | A unit of work against a deployment — install, upgrade, uninstall, action invocation, resource restart. Has a status and a full execution log. |
-| **Secret** | A named value stored at the env level. Surfaced to charts through the `CollectionSelect` input type. |
+| Concept             | What it is                                                                                                                                     |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Env**             | A logical grouping of clusters and the deployments that run on them. Roles are assigned per env.                                               |
+| **Cluster**         | A Kubernetes cluster registered with Platz. A cluster is attached to at most one env.                                                          |
+| **Deployment Kind** | A category of deployments — usually one per service. Multiple Helm registries can map to the same kind.                                        |
+| **Deployment**      | A single Helm release Platz manages. Lives in its own namespace inside a cluster.                                                              |
+| **Helm Registry**   | An OCI registry (ECR or generic) that Platz scans for charts.                                                                                  |
+| **Chart Extension** | Optional YAML files that ship inside a Helm chart and give Platz richer inputs, outputs, status, and actions.                                  |
+| **Task**            | A unit of work against a deployment — install, upgrade, uninstall, action invocation, resource restart. Has a status and a full execution log. |
+| **Secret**          | A named value stored at the env level. Surfaced to charts through the `CollectionSelect` input type.                                           |
 
 ## How a deployment happens
 

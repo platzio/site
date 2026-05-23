@@ -7,7 +7,7 @@ sidebar_position: 7
 Platz has two layers of ingress concerns, both of which need to be set up correctly:
 
 1. **The Platz install's own ingress** — the HTTPS endpoint that users and bots hit to use Platz itself. Configured at install time via the chart's `ingress` values. Covered in [Installing with Helm](/docs/guide/install/helm).
-2. **Per-cluster ingress for deployments** — the HTTPS endpoint each *deployment* gets, when its chart enables the [Standard Ingress feature](/docs/guide/chart-ext/features#ingress). Configured per cluster on the cluster's detail page. Covered here.
+2. **Per-cluster ingress for deployments** — the HTTPS endpoint each _deployment_ gets, when its chart enables the [Standard Ingress feature](/docs/guide/chart-ext/features#ingress). Configured per cluster on the cluster's detail page. Covered here.
 
 If your charts don't use the Standard Ingress feature (most internal services don't need to be HTTP-reachable), you can skip this page.
 
@@ -36,10 +36,10 @@ When set, the deployment's hostname is constructed as either:
 
 For a deployment named `api-prod` of kind `payments` on a cluster with domain `apps.example.com`:
 
-| `hostname_format` | Final hostname |
-| --- | --- |
-| `Name` | `api-prod.apps.example.com` |
-| `KindAndName` | `payments-api-prod.apps.example.com` |
+| `hostname_format` | Final hostname                       |
+| ----------------- | ------------------------------------ |
+| `Name`            | `api-prod.apps.example.com`          |
+| `KindAndName`     | `payments-api-prod.apps.example.com` |
 
 For deployments where the chart has `cardinality: OnePerCluster` (singleton charts — see [Features](/docs/guide/chart-ext/features)), the deployment name is omitted and the hostname is just `<kind>.<ingress_domain>`.
 
@@ -67,10 +67,10 @@ If empty, the generated Ingress is HTTP-only (no `tls:` block). Useful for inter
 
 `hostname_format` is set in the chart's `features.yaml`, not in Platz. Common settings:
 
-| `hostname_format` | Use when |
-| --- | --- |
-| `Name` | The deployment name is already unique within the cluster, and you want short URLs. Often used for customer-facing services where `<customer-name>.example.com` reads better than `payments-<customer-name>.example.com`. |
-| `KindAndName` | The cluster has many deployments of many kinds, and prefixing with kind avoids name collisions across kinds. The default. |
+| `hostname_format` | Use when                                                                                                                                                                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Name`            | The deployment name is already unique within the cluster, and you want short URLs. Often used for customer-facing services where `<customer-name>.example.com` reads better than `payments-<customer-name>.example.com`. |
+| `KindAndName`     | The cluster has many deployments of many kinds, and prefixing with kind avoids name collisions across kinds. The default.                                                                                                |
 
 Changing the `hostname_format` after a deployment is already running causes the next upgrade to regenerate the Ingress with the new hostname. The DNS record (if you're using external-dns) follows; if you manage DNS by hand, you'll need to repoint manually. Browser-bookmarked links to the old hostname break.
 

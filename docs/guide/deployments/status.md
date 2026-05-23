@@ -81,13 +81,13 @@ The chart's pod returns a JSON document conforming to this shape (defined in the
 }
 ```
 
-| Field | Type | Notes |
-| --- | --- | --- |
-| `color` | `"red"` / `"yellow"` / `"green"` | Sets the badge color in the deployment list. |
-| `text` | string | Free-form text rendered next to the badge. Keep short. |
-| `primary_metric` | optional `{label, value}` | Rendered in the deployment list row, right-aligned. Use for the one number that summarizes the service ("Active users", "Queue depth", "Error rate"). |
-| `metrics` | optional array of `{label, value}` | Rendered in the metrics grid on the Overview tab. |
-| `notices` | optional array of `{level, text}` | Rendered as banners on the Overview tab. `level` is `info`, `warning`, or `danger`. |
+| Field            | Type                               | Notes                                                                                                                                                 |
+| ---------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `color`          | `"red"` / `"yellow"` / `"green"`   | Sets the badge color in the deployment list.                                                                                                          |
+| `text`           | string                             | Free-form text rendered next to the badge. Keep short.                                                                                                |
+| `primary_metric` | optional `{label, value}`          | Rendered in the deployment list row, right-aligned. Use for the one number that summarizes the service ("Active users", "Queue depth", "Error rate"). |
+| `metrics`        | optional array of `{label, value}` | Rendered in the metrics grid on the Overview tab.                                                                                                     |
+| `notices`        | optional array of `{level, text}`  | Rendered as banners on the Overview tab. `level` is `info`, `warning`, or `danger`.                                                                   |
 
 All fields except `color` and `text` are optional. A minimal response is `{"color": "green", "text": "OK"}`.
 
@@ -132,6 +132,6 @@ The dependency's `reported_status` is a regular field on the `deployments` API. 
 
 - **One status per deployment.** Charts that have multiple components (a backend, a worker, a job) need to consolidate them into a single endpoint. There's no "status per pod" surfacing.
 - **The status endpoint is polled regardless of whether anyone's looking.** This is fine for cheap status computations but wasteful for expensive ones. If computing your status costs measurable money or compute, return cached results and update the cache on a slower schedule than the poll.
-- **No historical status.** Platz only knows the *current* status. If you want graphs of status-over-time, push the metrics to your time-series database from the same place that serves the status endpoint.
+- **No historical status.** Platz only knows the _current_ status. If you want graphs of status-over-time, push the metrics to your time-series database from the same place that serves the status endpoint.
 - **No alerting.** Platz doesn't page anyone based on the status. Wire status changes into your alerting via Grafana on the underlying metrics.
 - **The status endpoint isn't required to be public-internet reachable.** It needs to be reachable from the `platz-status-updates` pod. In-cluster ingress is fine; private DNS is fine. Public ingress is overkill (and risky).
