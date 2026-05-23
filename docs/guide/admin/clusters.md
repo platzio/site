@@ -63,7 +63,7 @@ The single most important setting: which env this cluster belongs to.
 
 ### Ingress Settings
 
-Per-cluster ingress configuration that feeds the [Standard Ingress feature](/docs/guide/chart-ext/features#standard-ingress). Three fields:
+Per-cluster ingress configuration that feeds the [Standard Ingress feature](/docs/guide/chart-ext/features#ingress). Three fields:
 
 | Field | Example | What it does |
 | --- | --- | --- |

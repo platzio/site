@@ -14,7 +14,7 @@ This page covers how the feature works at runtime, what the status document look
 
 `platz-status-updates` is a worker that subscribes to deployment changes and runs a polling loop per enabled deployment. For each deployment:
 
-1. Construct the URL from the deployment's [Standard Ingress](/docs/guide/chart-ext/features#standard-ingress) hostname plus the chart's configured status path. e.g., `https://<deployment-hostname>/api/v1/platz-status`.
+1. Construct the URL from the deployment's [Standard Ingress](/docs/guide/chart-ext/features#ingress) hostname plus the chart's configured status path. e.g., `https://<deployment-hostname>/api/v1/platz-status`.
 2. HTTP GET that URL with a 10-second timeout.
 3. Parse the JSON response into the expected status struct.
 4. Write the result into `deployments.reported_status`.

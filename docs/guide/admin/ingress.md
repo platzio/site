@@ -7,7 +7,7 @@ sidebar_position: 7
 Platz has two layers of ingress concerns, both of which need to be set up correctly:
 
 1. **The Platz install's own ingress** — the HTTPS endpoint that users and bots hit to use Platz itself. Configured at install time via the chart's `ingress` values. Covered in [Installing with Helm](/docs/guide/install/helm).
-2. **Per-cluster ingress for deployments** — the HTTPS endpoint each *deployment* gets, when its chart enables the [Standard Ingress feature](/docs/guide/chart-ext/features#standard-ingress). Configured per cluster on the cluster's detail page. Covered here.
+2. **Per-cluster ingress for deployments** — the HTTPS endpoint each *deployment* gets, when its chart enables the [Standard Ingress feature](/docs/guide/chart-ext/features#ingress). Configured per cluster on the cluster's detail page. Covered here.
 
 If your charts don't use the Standard Ingress feature (most internal services don't need to be HTTP-reachable), you can skip this page.
 
