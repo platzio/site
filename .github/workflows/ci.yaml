@@ -5,6 +5,11 @@ on:
     branches:
       - main
 
+# Least-privilege: both jobs only need to read the repo to check out and
+# run npm. No write access to contents, issues, PRs, etc.
+permissions:
+  contents: read
+
 jobs:
   format:
     name: 💅 Format check
