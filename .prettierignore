@@ -1,0 +1,12 @@
+node_modules
+build
+.docusaurus
+.cache-loader
+package-lock.json
+static
+*.lock
+
+# Blog uses MDX-specific syntax in .md files (e.g. {/* truncate */}).
+# Prettier's markdown parser mangles JSX expressions, so leave blog
+# posts untouched for now.
+blog
