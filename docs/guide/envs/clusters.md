@@ -62,7 +62,7 @@ If the dropdown is empty when you click "New Deployment", the most likely causes
 
 ## Moving a deployment between clusters
 
-The **Recreate** task type moves a deployment between clusters or namespaces. See [Deployment Tasks & History](/docs/guide/deployments/tasks-and-history#recreate). The user-facing flow: open the deployment, **Edit Deployment**, change the cluster dropdown, save. Platz uninstalls the deployment from the old cluster and reinstalls it on the new one in a single task.
+The **Recreate** task type moves a deployment between clusters or namespaces. See [Deployment Tasks & History](/docs/guide/deployments/tasks-and-history). The user-facing flow: open the deployment, **Edit Deployment**, change the cluster dropdown, save. Platz uninstalls the deployment from the old cluster and reinstalls it on the new one in a single task.
 
 Recreate is a maintainer-or-owner operation. A regular User role can't move deployments between clusters.
 
