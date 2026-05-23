@@ -12,7 +12,9 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "format": "prettier --write \"docs/**/*.{md,mdx}\" \"src/**/*.{ts,tsx,js,jsx,css}\" \"*.{json,ts,js}\"",
+    "format:check": "prettier --check \"docs/**/*.{md,mdx}\" \"src/**/*.{ts,tsx,js,jsx,css}\" \"*.{json,ts,js}\""
   },
   "dependencies": {
     "@docusaurus/core": "^3.10.1",
@@ -28,6 +30,7 @@
     "@docusaurus/module-type-aliases": "^3.10.1",
     "@docusaurus/tsconfig": "^3.10.1",
     "@docusaurus/types": "^3.10.1",
+    "prettier": "^3.8.3",
     "typescript": "^6.0.3"
   },
   "browserslist": {
