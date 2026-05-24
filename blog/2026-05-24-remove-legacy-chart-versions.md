@@ -30,18 +30,17 @@ a fresh install of an old version) get a 404.
 The dependency itself was removed in `v0.6.3`. The reasoning is in the
 [v0.6.8 release notes](/blog/v0.6.8) and on the
 [Database](/docs/guide/install/database) page: operators get full control
-over the database, and Platz isn't in the business of shipping somebody
-else's Postgres chart.
+over the database, and Platz doesn't ship with a specific database chart.
 
 ## What changed
 
 We removed entries `<= 0.6.2` from the Helm repository
 [index](https://platzio.github.io/helm-charts/index.yaml). The repository
 now serves `0.6.3` through `0.6.8`. That's enough history to roll back
-across the post-Bitnami era; everything older was tied to the broken
+across the post-Bitnami removal; everything older was tied to the broken
 dependency anyway.
 
-The release tarballs themselves are untouched — they still live on
+**The release tarballs themselves are untouched** — they still live on
 [GitHub Releases](https://github.com/platzio/helm-charts/releases). If
 you've pinned a specific older version by URL in your own automation, it
 will continue to resolve.
