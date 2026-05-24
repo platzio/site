@@ -19,7 +19,7 @@ If you're standing up a new database, pick the latest PostgreSQL the rest of you
 - **Google Cloud SQL for PostgreSQL** — works.
 - **Self-hosted on a VM or in-cluster** — fine for staging and dev. Production self-hosting is mostly a question of how comfortable your team is with operating Postgres.
 
-The chart does **not** provision Postgres for you. Previous chart versions bundled a Bitnami subchart; that dependency was removed in `v0.6.x` to give operators full control over the database.
+The chart does **not** provision Postgres for you. Previous chart versions bundled a Bitnami subchart; that dependency was removed in `v0.6.x` to give operators full control over the database. The pre-`0.6.3` chart versions that depended on it have since been [removed from the Helm index](/blog/remove-legacy-chart-versions) because the Bitnami image they pulled is no longer published.
 
 ## Sizing
 
