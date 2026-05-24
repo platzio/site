@@ -70,6 +70,30 @@ There's no `DATABASE_URL` knob; the chart doesn't construct a connection string.
 - For sslmode: set `PGSSLMODE=require` (or `verify-full`) in `api.extraEnv`, `k8sAgent.extraEnv`, etc.
 - For a CA bundle: mount it via `extraVolumes` / `extraVolumeMounts` (also requires customizing the deployment templates — open an issue if you need this).
 
+## Connection pool tuning
+
+Each Platz pod opens its own pool against Postgres. Defaults match what most installs want — 50 max connections per pod, 30 second connection timeout, 600 second idle timeout, 1800 second max lifetime. Override any of these from `values.yaml`:
+
+```yaml
+database:
+  pool:
+    maxSize: "100" # ceiling for concurrent connections
+    minIdle: "5" # keep this many warm
+    connectionTimeoutSecs: "10" # fail fast if Postgres is unreachable
+    idleTimeoutSecs: "300" # close idle connections sooner
+    maxLifetimeSecs: "900" # recycle connections more aggressively
+```
+
+Each entry maps to a `DB_POOL_*` environment variable injected by the chart's `database.envVars` helper, so every pod (`api`, `chart-discovery`, `k8s-agent`, `resource-sync`, `status-updates`) sees the same settings. Leave fields blank to fall back to the built-in defaults.
+
+Sizing notes:
+
+- The chart's default replica count opens **up to `maxSize × 5` connections** across all pods. The default 50 × 5 = 250 connections, comfortably under PostgreSQL's default `max_connections=100` _only_ if you've also raised `max_connections` server-side. For small installs, drop `maxSize` to 10–20.
+- If you put PgBouncer in front (session mode — see above), `maxSize` is the pool size against PgBouncer, not against Postgres. The Postgres-side connection count is whatever PgBouncer's `default_pool_size` dictates.
+- Lowering `connectionTimeoutSecs` is the right move during incidents — it surfaces "Postgres is gone" faster instead of letting requests stack up on the queue.
+
+The Terraform module exposes the same knobs via the `database_pool` variable (object with `max_size`, `min_idle`, `connection_timeout_secs`, `idle_timeout_secs`, `max_lifetime_secs`).
+
 ## Connecting from outside the cluster (for debugging)
 
 When you need to poke at the database — running ad-hoc queries, debugging a stuck task, reading a deployment's config blob — you can port-forward from the pod that's hosting your Postgres, or use any Postgres client with the credentials from the secret.
