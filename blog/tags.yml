@@ -2,3 +2,8 @@ releases:
   label: Releases
   permalink: /releases
   description: Release notes
+
+maintenance:
+  label: Maintenance
+  permalink: /maintenance
+  description: Maintenance notices for Platz installations
