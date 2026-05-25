@@ -15,7 +15,9 @@ Platz constructs a per-deployment JWT signed with its own JWT secret and injects
 - `sub` — the deployment's UUID.
 - `env_id` — the env the deployment belongs to.
 - `cluster_id` — the cluster the deployment is on.
-- `exp` — expiration, currently 1 hour from issuance.
+- `exp` — expiration. Default 1 hour from issuance; tunable per
+  k8s-agent instance via `PLATZ_DEPLOYMENT_CREDENTIALS_TOKEN_DURATION`
+  (see [Tuning the refresh cadence](#tuning-the-refresh-cadence) below).
 
 The JWT is renewed on every helm install/upgrade, so it's only ever "fresh as of the last task". For deployments that need a continuously valid token (because Platz's poller calls in with the latest token, but the deployment also makes outbound calls to Platz), the deployment should refresh its outbound credentials periodically.
 
@@ -95,9 +97,43 @@ When disabled, charts that try to use the Status feature or call back to Platz w
 
 In production, leave the variable unset (default: enabled).
 
+## Tuning the refresh cadence
+
+k8s-agent re-issues each deployment's token on a periodic schedule. Two
+humantime-duration settings control the cadence, both per k8s-agent
+instance:
+
+| Chart value                            | Env var                                         | Default | What it controls                                                            |
+| -------------------------------------- | ----------------------------------------------- | ------- | --------------------------------------------------------------------------- |
+| `deploymentCredentialsRefreshInterval` | `PLATZ_DEPLOYMENT_CREDENTIALS_REFRESH_INTERVAL` | `20m`   | How often k8s-agent walks all deployments and re-injects their credentials. |
+| `deploymentCredentialsTokenDuration`   | `PLATZ_DEPLOYMENT_CREDENTIALS_TOKEN_DURATION`   | `1h`    | `exp` of the issued JWT. Keep this larger than the refresh interval.        |
+
+```yaml
+k8sAgent:
+  instances:
+    - name: default
+      deploymentCredentialsRefreshInterval: 30m
+      deploymentCredentialsTokenDuration: 2h
+```
+
+The refresh loop does not abort the whole batch when a single
+deployment fails to apply a credential — remaining deployments in the
+same chunk still get their refresh attempt, and the error surfaces
+after the chunk completes.
+
+If you shorten `deploymentCredentialsTokenDuration` below
+`deploymentCredentialsRefreshInterval`, tokens will expire before the
+next refresh fires and chart pods will see authentication failures in
+the gap. The defaults leave a 3:1 safety margin (60 minutes lifetime
+vs. 20-minute refresh) for this reason.
+
 ## When the token expires
 
-Currently 1 hour. After expiration, the chart's pod can't make new authenticated calls to Platz, and Platz's status poller stops trusting calls from the pod (though Platz's poller is the _caller_ there, so what matters is the token Platz includes in its request, not the one the pod has).
+Default 1 hour (tunable via `deploymentCredentialsTokenDuration` as
+above). After expiration, the chart's pod can't make new authenticated
+calls to Platz, and Platz's status poller stops trusting calls from the
+pod (though Platz's poller is the _caller_ there, so what matters is the
+token Platz includes in its request, not the one the pod has).
 
 In practice this means:
 
@@ -114,7 +150,10 @@ If you want the chart's UI to know which Platz user is talking to it, the chart'
 
 ## Caveats
 
-- **The 1-hour expiration is a deliberate trade-off.** Short tokens limit blast radius if leaked, but they require deployment pods to handle refresh. The current expiry is hard-coded; not a chart-level setting.
+- **Short token lifetimes are a deliberate trade-off.** Shorter tokens
+  limit blast radius if leaked, but they require deployment pods to
+  handle refresh. The default is 1 hour and is configured per k8s-agent
+  instance, not per chart.
 - **Tokens are HS256, not RS256.** A shared secret, not asymmetric crypto. Charts that verify the token need the same secret Platz uses — which they get via the same secret-injection path. Don't try to verify in a sidecar that doesn't have the secret.
 - **No revocation.** A leaked deployment token works for an hour even if you find the leak immediately. Treat tokens as expirable secrets, not as long-lived credentials.
 - **The token is in the helm values blob in the database.** If your Postgres backups are compromised, all deployment tokens issued within the last hour are exposed. This is one more reason to keep backups encrypted (the `backup-config` secret's `encryptionKey`).
