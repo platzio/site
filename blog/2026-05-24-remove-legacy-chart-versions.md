@@ -28,7 +28,7 @@ Helm chart still references the old path, so scanners (and anyone trying
 a fresh install of an old version) get a 404.
 
 The dependency itself was removed in `v0.6.3`. The reasoning is in the
-[v0.6.8 release notes](/blog/v0.6.8) and on the
+[v0.6.8 release notes](/news/v0.6.8) and on the
 [Database](/docs/guide/install/database) page: operators get full control
 over the database, and Platz doesn't ship with a specific database chart.
 
