@@ -24,6 +24,23 @@ const config: Config = {
     locales: ["en"],
   },
 
+  plugins: [
+    [
+      "@docusaurus/plugin-client-redirects",
+      {
+        createRedirects(existingPath: string) {
+          if (existingPath === "/news") {
+            return ["/blog"];
+          }
+          if (existingPath.startsWith("/news/")) {
+            return [existingPath.replace(/^\/news\//, "/blog/")];
+          }
+          return undefined;
+        },
+      },
+    ],
+  ],
+
   presets: [
     [
       "classic",
@@ -32,6 +49,7 @@ const config: Config = {
           sidebarPath: "./sidebars.ts",
         },
         blog: {
+          routeBasePath: "news",
           showReadingTime: true,
           feedOptions: {
             type: ["rss", "atom"],
@@ -71,7 +89,7 @@ const config: Config = {
           position: "left",
           label: "API",
         },
-        { to: "/blog", label: "Blog", position: "left" },
+        { to: "/news", label: "News", position: "left" },
         {
           href: "https://github.com/platzio",
           label: "GitHub",
@@ -85,10 +103,16 @@ const config: Config = {
         {
           title: "Docs",
           items: [
+            { label: "Getting Started", to: "/docs/guide/intro" },
+            { label: "Installation", to: "/docs/guide/install/helm" },
+            { label: "Environments", to: "/docs/guide/envs/clusters" },
+            { label: "Deployments", to: "/docs/guide/deployments/overview" },
             {
-              label: "Tutorial",
-              to: "/docs/guide/intro",
+              label: "Chart Extensions",
+              to: "/docs/guide/chart-ext/overview",
             },
+            { label: "Administration", to: "/docs/guide/admin/auth" },
+            { label: "API", to: "/docs/api" },
           ],
         },
         {
@@ -104,8 +128,8 @@ const config: Config = {
           title: "More",
           items: [
             {
-              label: "Blog",
-              to: "/blog",
+              label: "News",
+              to: "/news",
             },
             {
               label: "GitHub",
