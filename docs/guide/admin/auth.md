@@ -49,18 +49,18 @@ The very first time a user clicks "Login" in Platz:
 2. The user signs in there (potentially through your IdP's MFA, etc.).
 3. The IdP redirects back to `/auth/google/callback` with an authorization code.
 4. Platz exchanges the code for a token, fetches the user's `email` and `name` claims, and looks them up in the `users` table.
-5. If a user with that email **doesn't exist**, Platz creates one. The new user's `is_active` flag is set based on the `ADMIN_EMAILS` environment variable (see below).
+5. If a user with that email **doesn't exist**, Platz creates one. The new user's `is_active` flag is set based on the configured admin email list (see below).
 6. If a user with that email **does exist**, Platz reuses it. The `name` is updated if the IdP's value has changed.
 7. Platz issues its own session JWT, drops a cookie, and redirects to the main page.
 
-### Admin promotion via `ADMIN_EMAILS`
+### Admin promotion via `adminEmails`
 
-The `auth.adminEmails` chart value becomes the `ADMIN_EMAILS` env var (a space-delimited string) on the `platz-api` container. When a user logs in for the first time, their email is checked against that list:
+The `auth.adminEmails` chart value is passed to the API as one `--admin-email=<email>` command-line flag per entry (you can confirm with `kubectl -n platzio get deploy platz-platzio-api -o yaml`). The backend also accepts a space-delimited `ADMIN_EMAILS` environment variable as an alternative, but the chart wires the values as flags. When a user logs in for the first time, their email is checked against that list:
 
 - **Match** → the user is created with `is_admin=true` and `is_active=true`. They go straight to the admin area.
 - **No match** → the user is created with `is_admin=false` and `is_active=false`. They see an "Inactive user" splash and can't do anything until a site admin activates them.
 
-This rule applies **at signup time only**. Removing an email from `ADMIN_EMAILS` after the user already exists does _not_ demote them. To revoke admin, edit the user from `/admin/users` (the "Change Global Role" action).
+This rule applies **at signup time only**. Removing an email from `adminEmails` after the user already exists does _not_ demote them. To revoke admin, edit the user from `/admin/users` (the "Change Global Role" action).
 
 ### Auto-add to envs
 
@@ -104,30 +104,28 @@ Revoke at any time from the same page — revocation is immediate. There's no au
 Bot tokens belong to a **bot account**, which is a first-class entity in Platz, not tied to any person. Use them for any automation that:
 
 - Should outlive any particular person at the company.
-- Needs permissions different from any individual's permissions (e.g. broader env access, narrower deployment access).
 - Belongs to a service identity rather than a human.
 
 Bot management lives under `/admin/bots`:
 
 1. Create a bot, give it a name.
 2. Issue an API token for it. Same copy-once flow as user tokens.
-3. Grant env permissions to the bot just like you would a user.
 
-Bots authenticate exactly like users (same `x-platz-token` header). The API distinguishes the two only when checking permissions and recording audit info.
+Bots authenticate exactly like users (same `x-platz-token` header).
 
-See [Bots](/docs/guide/admin/bots) for the full workflow including env permission assignment.
+> **Bot tokens are not yet scoped by permissions.** Unlike users, bots can't be granted env- or deployment-level roles, and the deployment-maintainer authorization check currently lets _any_ valid bot token through (per-bot permissions are a known backend limitation). Treat a bot token as a powerful credential. See [Bots](/docs/guide/admin/bots) for details and the recommended alternatives.
 
 ## Browser sessions vs API tokens
 
-|                             | Browser session                         | User token                | Bot token                 |
-| --------------------------- | --------------------------------------- | ------------------------- | ------------------------- |
-| Auth header                 | Cookie (set by `/auth/google/callback`) | `x-platz-token`           | `x-platz-token`           |
-| Validity                    | 7 days from OIDC login                  | Until revoked             | Until revoked             |
-| Scope                       | All of user's permissions               | All of user's permissions | The bot's env permissions |
-| Tied to a human?            | Yes                                     | Yes                       | No                        |
-| Visible to API consumers as | `acting_user_id`                        | `acting_user_id`          | `acting_bot_id`           |
+|                       | Browser session                         | User token                | Bot token                                |
+| --------------------- | --------------------------------------- | ------------------------- | ---------------------------------------- |
+| Auth header           | Cookie (set by `/auth/google/callback`) | `x-platz-token`           | `x-platz-token`                          |
+| Validity              | 7 days from OIDC login                  | Until revoked             | Until revoked                            |
+| Scope                 | All of user's permissions               | All of user's permissions | Not permission-scoped (see caveat above) |
+| Tied to a human?      | Yes                                     | Yes                       | No                                       |
+| Recorded on a task as | `acting_user_id`                        | `acting_user_id`          | _(neither column — see below)_           |
 
-Audit log entries (`deployment_tasks.acting_user_id` / `acting_bot_id` / `acting_deployment_id`) make it possible to distinguish "Alice manually upgraded this" from "the CI bot upgraded this" from "the parent deployment triggered a child deployment via Invoke Action".
+Audit log entries use two nullable columns, `deployment_tasks.acting_user_id` and `deployment_tasks.acting_deployment_id`, to distinguish "Alice manually upgraded this" from "the parent deployment triggered a child deployment via Invoke Action". There is **no** `acting_bot_id` column: a task triggered by a bot token currently records neither column. If you need a per-actor audit trail, prefer user tokens over bots.
 
 ## Troubleshooting OIDC
 
