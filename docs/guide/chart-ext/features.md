@@ -95,7 +95,7 @@ spec:
 
 - `endpoint` — Currently must be `standard_ingress`. Future versions may support other transports.
 - `path` — The path appended to the standard ingress hostname to form the full URL.
-- `refresh_interval_secs` — Polling interval. Default 15s. Don't go below 5; Platz will accept it but you're burning CPU for no gain.
+- `refresh_interval_secs` — Polling interval. Default 15s. Platz enforces a **15-second floor**: any smaller value is silently clamped up to 15, so configuring `5` behaves identically to `15`.
 
 The Status feature requires the `ingress` feature to also be enabled (because that's where the hostname comes from). Without ingress, the status URL has no host and polling silently doesn't happen.
 
