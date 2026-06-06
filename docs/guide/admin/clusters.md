@@ -102,12 +102,11 @@ A list view of every deployment currently on the cluster. Mostly useful as a san
 
 ## Cross-account EKS
 
-The pattern for managing EKS clusters in tenant AWS accounts while running Platz in a control-plane account:
+The pattern for managing EKS clusters in tenant AWS accounts while running Platz in a control-plane account. Note that cross-account access is **not** a chained `sts:AssumeRole` — each agent pod federates directly into a role in the tenant account using IRSA / web-identity, with the tenant-account role trusting the control cluster's OIDC provider:
 
-1. **Control-plane account**: the `platz-k8s-agent` IRSA role has `sts:AssumeRole` permission on roles in each tenant account.
-2. **Each tenant account**: a role that allows the control-plane account's `platz-k8s-agent` role to assume it, with permissions `eks:ListClusters`, `eks:DescribeCluster`.
-3. **Each tenant account's EKS cluster**: the assumed role is mapped via `aws-auth` ConfigMap or EKS access entries to a Kubernetes ClusterRole that allows the operations Platz needs (cluster admin, in practice).
-4. **In Platz Helm values**: one `k8sAgent.instances[]` entry per tenant account, each annotated with the tenant-account role ARN.
+1. **Each tenant account**: register the control cluster's IRSA OIDC provider as an identity provider (the EKS issuer is public, so any account can trust it), then create a `platz-k8s-agent` role whose trust policy allows `AssumeRoleWithWebIdentity` for the control cluster's `system:serviceaccount:<ns>:<release>-k8s-agent-<instance>`. Give it `ec2:DescribeRegions`, `eks:ListClusters`, `eks:DescribeCluster`.
+2. **Each tenant account's EKS cluster**: that role is mapped via EKS access entries (or the `aws-auth` ConfigMap on older clusters) to a Kubernetes ClusterRole that allows the operations Platz needs (cluster admin, in practice).
+3. **In Platz Helm values**: one `k8sAgent.instances[]` entry per tenant account, each annotated with the tenant-account role ARN. The agent pod's ServiceAccount token is what gets federated into that role, so the instance name must match the one the role's trust policy pins.
 
 ```yaml
 k8sAgent:
