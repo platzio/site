@@ -16,11 +16,12 @@ User tokens (see [Authentication](/docs/guide/admin/auth)) work fine for persona
 - **Permissions inherited from a human.** That human might be a maintainer on three envs they shouldn't be touching from CI.
 - **Audit trail says "Alice did this"** even when really it was the deploy bot acting on Alice's behalf.
 
-Bots fix all three:
+Bots help with the first point cleanly — a bot is a durable service identity that outlives any individual employee, so rotating people doesn't break your automation.
 
-- They outlive any individual employee.
-- Their env permissions are independent of any user's permissions.
-- The audit log distinguishes `acting_user_id` from `acting_bot_id`, so "deployed by ci-deploy-bot" reads clearly in the History tab.
+Be aware of two **current limitations** before you lean on bots (both are tracked backend limitations, not by-design behavior):
+
+- **Bots are not permission-scoped.** Bots can't be granted env- or deployment-level roles, and the deployment-maintainer authorization check currently lets any valid bot token through. A bot token is effectively unrestricted — treat it as a powerful credential.
+- **Bot actions aren't separately attributed in the audit trail.** There is no `acting_bot_id` column; a task triggered by a bot records neither `acting_user_id` nor `acting_deployment_id`. If you need "who did this" in the History tab, a user token attributes the action to a person, whereas a bot does not.
 
 ## Creating a bot
 
@@ -49,46 +50,61 @@ x-platz-token: <token>
 
 A bot can have any number of active tokens. Multiple tokens are useful when you're rotating — issue a new one, deploy it to your CI, then revoke the old one once the deploy succeeds.
 
-## Granting permissions
+## Permissions and scope
 
-A freshly created bot can authenticate but can't see any envs. To give it access, go to the env settings (not the bot page) and grant it permissions there:
+A bot does not get env- or deployment-level roles the way a user does — the env
+`user-roles` and `deployment-permissions` settings only accept users. As of today a bot
+token is **not permission-scoped at all**: once authenticated it passes the
+deployment-maintainer check (the per-bot permission model is a known backend limitation,
+marked `// TODO: Add bot permissions` in the source). In practice that means **any bot
+token can act as a maintainer across deployments**, so you can't lean on Platz RBAC to
+contain a bot.
 
-1. `/envs/<env>/settings/user-roles` → **Add User Permission**.
-2. The picker shows both users and bots. Pick the bot.
-3. Choose a role: `Admin` (full env access including modifying env settings) or `User` (can deploy and invoke actions according to deployment-level permissions).
+Until per-bot permissions land, contain blast radius outside of Platz:
 
-For deployment-level permissions (e.g. only the bot can deploy a specific kind), use `/envs/<env>/settings/deployment-permissions` and assign the bot `Owner` or `Maintainer` on the relevant deployment kinds.
+- **Prefer per-deployment credentials for chart back-ends.** A chart whose back-end calls
+  Platz already gets a short-lived, automatically-scoped token in its namespace
+  (`platz-creds`, an `Identity::Deployment` token). Use that instead of handing the chart a
+  bot token — it's scoped to that one deployment and rotates on its own. See
+  [Credentials](/docs/guide/deployments/credentials).
+- **Limit what the token can reach.** Network policy, registry scoping, and CI secret
+  isolation are your real guardrails for a bot.
+- **Issue and rotate sparingly.** Keep the number of live bot tokens small and rotate them.
 
-The full RBAC model is in [Permissions](/docs/guide/envs/permissions).
+The full (user-facing) RBAC model is in [Permissions](/docs/guide/envs/permissions).
 
 ## Revoking access
 
 Two levels:
 
 - **Revoke a single token.** From the bot's detail page, find the token row and click the **Revoke** action. The token stops working immediately, but the bot itself stays around with any other tokens still functional.
-- **Delete the bot.** From the bot's detail page, **Actions** → **Delete Bot**. This removes all of the bot's tokens at once and removes the bot from any env it was granted access to. The audit log entries that reference the bot stay intact (foreign keys use nullable bot IDs).
+- **Delete the bot.** From the bot's detail page, **Actions** → **Delete Bot**. This removes all of the bot's tokens at once, so every token it ever issued stops working.
 
 ## Conventions for bot accounts
 
 A few rules of thumb that scale well:
 
 - **One bot per system, not one bot per token.** Your CI has one identity, even if you rotate its token weekly.
-- **Scope down to the env that needs it.** Give the prod-deploy bot access only to the prod env. Give the staging-deploy bot access only to staging.
-- **Use deployment-level permissions for service back-ends.** If a chart's back-end calls Platz to invoke actions, give the chart's bot `Maintainer` on its own deployment kind (and nothing else). It can act on its own deployments but can't touch anyone else's.
-- **Don't share bot tokens across teams.** When team A shares a token with team B, every action that team B takes shows up in the audit log as team A's bot. You lose the audit trail.
+- **Remember a bot token isn't permission-scoped.** Because Platz doesn't yet restrict a bot to specific envs or deployment kinds, don't assume a "prod-deploy bot" can only touch prod — any valid bot token can act as a maintainer. Limit reach with network/registry scoping instead.
+- **Prefer per-deployment credentials for service back-ends.** If a chart's back-end calls Platz to invoke actions, use the deployment's own `platz-creds` token (see [Credentials](/docs/guide/deployments/credentials)) rather than a bot — it's automatically scoped to that one deployment.
+- **Don't share bot tokens across teams.** A leaked or over-shared token is hard to trace because bot actions aren't attributed to a person in the audit columns.
 - **Rotate tokens periodically.** Even with no observed compromise, rotation limits blast radius if a token leaks via a CI log, screenshot, or git history.
 
-## Bot-acted vs user-acted vs deployment-acted
+## User-acted vs deployment-acted (and where bots fit)
 
-Every `deployment_task` records who triggered it via one of three nullable columns:
+Every `deployment_task` records who triggered it via two nullable columns:
 
 | Column                 | Set when                                                                                                             |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `acting_user_id`       | A human (using either a browser session or a personal user token) triggered the task.                                |
-| `acting_bot_id`        | A bot's token was used.                                                                                              |
 | `acting_deployment_id` | A deployment triggered the task on another deployment (e.g. an `InvokeAction` from a chart's `actions-schema.yaml`). |
 
-The History tab in the UI surfaces all three. Filter by `acting_bot_id` when you want to audit a specific bot's activity, or by `acting_deployment_id` when you want to trace cross-deployment side effects.
+There is **no `acting_bot_id` column.** A task triggered by a bot token leaves both
+columns null, so it isn't attributed to a specific bot (or to anything) in the History
+tab. This is the main reason to prefer a user token when you care about a per-actor audit
+trail, and to prefer per-deployment `platz-creds` for chart back-ends (those _do_ populate
+`acting_deployment_id`). Filter by `acting_deployment_id` to trace cross-deployment side
+effects.
 
 ## Pitfalls
 
