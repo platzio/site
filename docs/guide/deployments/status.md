@@ -42,7 +42,7 @@ Three fields:
 
 - `endpoint` — currently only `standard_ingress` is supported. The status URL is constructed by appending `path` to the deployment's standard ingress hostname.
 - `path` — the HTTP path to GET. Anything; pick something that doesn't clash with your application routes.
-- `refresh_interval_secs` — how often to poll. Default 15 seconds. Lower for high-signal services, higher for low-traffic ones.
+- `refresh_interval_secs` — how often to poll. Default 15 seconds, which is also the floor — Platz clamps anything lower up to 15. Raise it for low-traffic services.
 
 The Status feature requires the Standard Ingress feature to also be enabled (because that's where the hostname comes from). If your chart has `ingress.enabled: false`, Status is a no-op.
 
