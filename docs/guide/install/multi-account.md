@@ -96,9 +96,13 @@ The module's trust policy ends up allowing
 cluster's issuer — so the `instance_name`, `k8s_namespace`, and `helm_release_name` here
 **must match** the values you use when installing Platz in the control cluster.
 
-## Step 3 — Add one agent instance per account to the control install
+## Step 3 — Add one agent instance per tenant account to the control install
 
-Pass every per-account role into the `main` module's `k8s_agents` list:
+Pass one per-tenant-account role into the `main` module's `k8s_agents` list. **There is no
+agent instance for the control account itself** — the control cluster runs Platz and is
+deliberately not a deployment target (that separation is the whole point of this topology;
+see [Security considerations](/docs/guide/install/security)). The control cluster never
+gets discovered or attached to an env, so no workloads land on the control plane.
 
 ```hcl
 # In the CONTROL account / Platz install:
@@ -108,25 +112,20 @@ module "platz" {
   k8s_cluster_name = "control-cluster"
   # ... ingress, oidc_ssm_params, admin_emails ...
 
+  # One entry per TENANT account — not the control account.
   k8s_agents = [
-    module.platz_k8s_agent_role_control, # the control account's own role
-    module.platz_k8s_agent_role_tenant_a, # remote-state / provider-aliased outputs
-    module.platz_k8s_agent_role_tenant_b,
+    module.platz_k8s_agent_role_tenant_prod,    # account 2222… (provider-aliased / remote-state outputs)
+    module.platz_k8s_agent_role_tenant_staging, # account 3333…
   ]
 }
 ```
 
-Or, with a plain Helm values file, one instance per account, each annotated with that
-account's role ARN:
+Or, with a plain Helm values file, one instance per tenant account, each annotated with
+that account's role ARN:
 
 ```yaml
 k8sAgent:
   instances:
-    - name: control # same-account clusters
-      provider: eks
-      serviceAccount:
-        annotations:
-          eks.amazonaws.com/role-arn: arn:aws:iam::111122223333:role/platz-k8s-agent-control
     - name: tenant-prod # account 2222…
       provider: eks
       serviceAccount:
@@ -142,6 +141,13 @@ k8sAgent:
 Each instance is its own StatefulSet and discovers EKS clusters across **all regions** of
 its account. So a single tenant instance covers every region in that account — you split
 by account, not by region.
+
+> **What if the control account also hosts workload clusters?** Keep them out of the
+> control account if you can — colocating workload clusters with the control plane weakens
+> the isolation. If you genuinely must, add a separate agent instance scoped to the
+> control account's _workload_ clusters and simply never attach the control cluster itself
+> to an env (or set its **Ignore** flag). The control cluster being discovered is harmless;
+> the thing to avoid is attaching it to an env and deploying onto it.
 
 ## Step 4 — Authorize each agent in each cluster's RBAC
 
