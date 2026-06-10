@@ -51,7 +51,7 @@ The very first time a user clicks "Login" in Platz:
 4. Platz exchanges the code for a token, fetches the user's `email` and `name` claims, and looks them up in the `users` table.
 5. If a user with that email **doesn't exist**, Platz creates one. The new user's `is_active` flag is set based on the configured admin email list (see below).
 6. If a user with that email **does exist**, Platz reuses it. The `name` is updated if the IdP's value has changed.
-7. Platz issues its own session JWT, drops a cookie, and redirects to the main page.
+7. Platz mints its own session JWT and returns it to the browser in the response body. The frontend stores it in `localStorage` (key `access_token`) and sends it as an `Authorization: Bearer <jwt>` header on every subsequent API call. Platz does not set any cookies.
 
 ### Admin promotion via `adminEmails`
 
@@ -117,13 +117,13 @@ Bots authenticate exactly like users (same `x-platz-token` header).
 
 ## Browser sessions vs API tokens
 
-|                       | Browser session                         | User token                | Bot token                                |
-| --------------------- | --------------------------------------- | ------------------------- | ---------------------------------------- |
-| Auth header           | Cookie (set by `/auth/google/callback`) | `x-platz-token`           | `x-platz-token`                          |
-| Validity              | 7 days from OIDC login                  | Until revoked             | Until revoked                            |
-| Scope                 | All of user's permissions               | All of user's permissions | Not permission-scoped (see caveat above) |
-| Tied to a human?      | Yes                                     | Yes                       | No                                       |
-| Recorded on a task as | `acting_user_id`                        | `acting_user_id`          | _(neither column — see below)_           |
+|                       | Browser session               | User token                | Bot token                                |
+| --------------------- | ----------------------------- | ------------------------- | ---------------------------------------- |
+| Auth header           | `Authorization: Bearer <jwt>` | `x-platz-token`           | `x-platz-token`                          |
+| Validity              | 7 days from OIDC login        | Until revoked             | Until revoked                            |
+| Scope                 | All of user's permissions     | All of user's permissions | Not permission-scoped (see caveat above) |
+| Tied to a human?      | Yes                           | Yes                       | No                                       |
+| Recorded on a task as | `acting_user_id`              | `acting_user_id`          | _(neither column — see below)_           |
 
 Audit log entries use two nullable columns, `deployment_tasks.acting_user_id` and `deployment_tasks.acting_deployment_id`, to distinguish "Alice manually upgraded this" from "the parent deployment triggered a child deployment via Invoke Action". There is **no** `acting_bot_id` column: a task triggered by a bot token currently records neither column. If you need a per-actor audit trail, prefer user tokens over bots.
 
@@ -139,4 +139,4 @@ Most often: the redirect URI configured in your IdP doesn't match `https://<PLAT
 The token is wrong, revoked, or the user/bot is inactive. Try the same token in `curl` against `/api/v2/users/me` — that endpoint will give a clearer error message than most.
 
 **JWT works in browser but not in API client.**
-The browser sends the session as a cookie. API clients should use a user token or bot token via `x-platz-token`, _not_ the cookie value. The two formats are different.
+The browser sends its session JWT as `Authorization: Bearer <jwt>` (the value it keeps in `localStorage`). That session JWT is a different credential from an API token — API clients should use a user token or bot token via the `x-platz-token` header, not the browser's bearer JWT.

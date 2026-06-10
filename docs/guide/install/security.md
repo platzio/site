@@ -74,7 +74,8 @@ and reaches the target cluster's API the same way. Design the network around tha
   so a private, tightly-scoped network path is the control here, not TLS. See
   [Database](/docs/guide/install/database).
 - **Terminate TLS at the ingress.** Always serve the UI/API over HTTPS — via cert-manager
-  or an ACM certificate on an ALB. The OIDC callback and the session cookie depend on it.
+  or an ACM certificate on an ALB. The OIDC callback and the bearer session token the
+  browser sends on every request must not travel in the clear.
 - **Restrict egress.** A NetworkPolicy (or security groups) that allows the control
   cluster egress only to the cluster API endpoints, AWS APIs, your OCI/ECR registries, and
   the database limits what a compromised control-plane pod can reach.
