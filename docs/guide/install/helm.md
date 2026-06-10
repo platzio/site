@@ -17,10 +17,10 @@ This page walks through a complete install. If you just want to bring Platz up l
 
 Before running `helm install`:
 
-- **Kubernetes 1.14 or newer.** Older versions are unsupported because the chart emits `networking.k8s.io/v1` Ingress resources.
+- **A reasonably recent Kubernetes.** The chart adapts its Ingress resources to the cluster: `networking.k8s.io/v1` on Kubernetes 1.19+, `networking.k8s.io/v1beta1` on 1.14–1.18, `extensions/v1beta1` on anything older. Any version covered by EKS (or otherwise still supported upstream) is fine.
 - **An Ingress controller** in the target cluster — `ingress-nginx`, AWS Load Balancer Controller, Traefik, etc. The chart can run without ingress (set `ingress.enabled=false`), but production installs almost always want one.
 - **`cert-manager`** (optional) if you want the chart to auto-issue a TLS certificate. If you already have a certificate or a wildcard cert-manager `Certificate`, you can skip this.
-- **A reachable PostgreSQL 15+ database.** The chart treats Postgres as external — managed RDS, Aurora, Cloud SQL, or a self-managed Postgres all work. You'll need a database, a user with full privileges on that database, and network access from the Platz pods. PostgreSQL 17 is the version Platz is built and tested against, but any reasonably modern Postgres should work.
+- **A reachable PostgreSQL database.** The chart treats Postgres as external — managed RDS, Aurora, Cloud SQL, or a self-managed Postgres all work. You'll need a database, a user with full privileges on that database, and network access from the Platz pods. PostgreSQL 17 is the version Platz is built and tested against; older versions back to 12 are likely to work but aren't exercised by CI (see [Database](/docs/guide/install/database)).
 - **An OIDC application** configured in your IdP. You'll need a client ID, a client secret, and to allow Platz's redirect URL (`https://<your-platz-host>/auth/google/callback` — the path is `/auth/google/callback` for historical reasons even if you're not using Google).
 - **CLI tools:** `kubectl`, `helm` 3.8+ (3.8 added OCI support), and `aws` if you're using IRSA-based ECR access.
 
@@ -53,7 +53,7 @@ kubectl -n platzio create secret generic postgres-creds \
   --from-literal=PGDATABASE=platz
 ```
 
-These five values are injected as environment variables into every Platz pod that talks to the database (the API and all four background workers). There is no `DATABASE_URL` alternative — the chart wires the five `PG*` variables directly into each pod via `envFrom`.
+These five values are injected as environment variables into every Platz pod that talks to the database (the API and all four background workers) — the chart wires each `PG*` key in as an individual env var with a `secretKeyRef`. The backend assembles its connection URL from these five variables. A `DATABASE_URL` environment variable is also honored and takes precedence over the `PG*` variables, but it's a deprecated legacy escape hatch (you'd have to inject it yourself via `extraEnv`) — stick to the secret.
 
 ## Step 3 — Create the OIDC config secret
 
