@@ -67,8 +67,9 @@ oidc_ssm_params = {
 }
 ```
 
-This keeps the secret out of your Terraform state where possible and lets you rotate it
-without a `terraform apply`.
+This keeps the secret values out of your `.tf` files and version control. (They are still
+read into Terraform state — like any data source — and rotating a parameter requires a
+`terraform apply` to propagate the new value into the `oidc-config` Kubernetes Secret.)
 
 ## Typical structure
 
@@ -172,14 +173,16 @@ per account (each with a distinct `instance_name`) and pass them all in the
 ## IAM roles created (IRSA)
 
 Each helper submodule creates an IAM role whose trust policy allows the EKS cluster's OIDC
-provider to assume it via `AssumeRoleWithWebIdentity`, pinned to the matching ServiceAccount
-(`system:serviceaccount:<namespace>:<release>-<worker>-<instance>`).
+provider to assume it via `AssumeRoleWithWebIdentity`, pinned to the exact ServiceAccount:
+`system:serviceaccount:<namespace>:<release>-k8s-agent-<instance>` and
+`...:<release>-chart-discovery-<instance>` for the per-instance workers, and the fixed
+`system:serviceaccount:<namespace>:platz-backup` for the backup job.
 
 | Submodule         | Role permissions                                                                                                                                                    |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `k8s-agent-role`  | `ec2:DescribeRegions`, `eks:ListClusters`, `eks:DescribeCluster` on `*`, plus the `AmazonEC2ContainerRegistryReadOnly` managed policy. One role per agent instance. |
 | `chart-discovery` | `sqs:ReceiveMessage`/`DeleteMessage`/`GetQueueUrl`/`GetQueueAttributes` on its queue, `sqs:ListQueues` on `*`, plus `AmazonEC2ContainerRegistryReadOnly`.           |
-| `backup`          | `s3:PutObject` (and related) on the backup bucket.                                                                                                                  |
+| `backup`          | `s3:PutObject` on the backup bucket prefix.                                                                                                                         |
 
 The `resource-sync` and `status-updates` workers need no AWS permissions, so no IAM roles
 are created for them. The chart wires each role ARN onto the relevant pod's ServiceAccount
