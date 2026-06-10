@@ -34,7 +34,7 @@ Sensible defaults to start with:
 - **CPU:** 2 vCPUs.
 - **Memory:** 4 GiB.
 - **Storage:** 50 GiB GP3 (or equivalent), with autoscaling if your cloud supports it.
-- **Connections:** 100 max connections is plenty. The chart's default replica counts open ~20 connections in total (each worker keeps a small pool). If you scale workers, watch `max_connections` and Postgres' shared-buffer sizing.
+- **Connections:** 100 max connections is plenty for typical load — connections are opened on demand, and an idle install holds a few dozen at most. Note that the default per-pod pool _ceiling_ across all pods adds up to more than 100, so cap `database.pool.maxSize` or raise `max_connections` accordingly — see [Connection pool tuning](#connection-pool-tuning) below.
 
 Scale up if you see the API's response time creep above 100ms for list endpoints, or if `LISTEN`/`NOTIFY` events back up (you'll see this as stale data in the UI).
 
@@ -63,12 +63,11 @@ For paranoia-grade upgrades, take a manual database snapshot before bumping the 
 
 ## Connecting to the database
 
-Each Platz pod reads its connection settings from the secret named by `database.secretName` (default `postgres-creds`). The five keys (`PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`) are injected as environment variables and Diesel picks them up via `libpq`.
+Each Platz pod reads its connection settings from the secret named by `database.secretName` (default `postgres-creds`). The five keys (`PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`) are injected as environment variables, and the backend assembles them into a `postgres://` connection URL itself. Platz does **not** link against libpq — it connects through `tokio-postgres` — so libpq-only environment variables (`PGSSLMODE`, `PGSSLROOTCERT`, a `~/.pgpass` file, etc.) have **no effect**.
 
-There's no `DATABASE_URL` knob; the chart doesn't construct a connection string. If you need TLS or special connection parameters:
+The backend also honors a `DATABASE_URL` environment variable, which takes precedence over the five `PG*` variables. It's a deprecated legacy option and the chart never sets it; if you need it, inject it via `api.extraEnv`, `k8sAgent.extraEnv`, etc.
 
-- For sslmode: set `PGSSLMODE=require` (or `verify-full`) in `api.extraEnv`, `k8sAgent.extraEnv`, etc.
-- For a CA bundle: mount it via `extraVolumes` / `extraVolumeMounts` (also requires customizing the deployment templates — open an issue if you need this).
+⚠️ **TLS to Postgres is not currently supported.** The backend's database connections (including the dedicated `LISTEN`/`NOTIFY` connection) are established without a TLS connector, so they are plaintext. Keep the network path between the Platz pods and Postgres private — same-VPC private subnets with tight security groups, or an encrypted overlay/service mesh if your environment requires encryption in transit. If your managed Postgres enforces `rejectUnencrypted`/`ssl=on` for all clients, Platz won't be able to connect; open an issue if you need native TLS support.
 
 ## Connection pool tuning
 
@@ -88,7 +87,7 @@ Each entry maps to a `DB_POOL_*` environment variable injected by the chart's `d
 
 Sizing notes:
 
-- The chart's default replica count opens **up to `maxSize × 5` connections** across all pods. The default 50 × 5 = 250 connections, comfortably under PostgreSQL's default `max_connections=100` _only_ if you've also raised `max_connections` server-side. For small installs, drop `maxSize` to 10–20.
+- The chart's default replica count allows **up to `maxSize × 5` connections** across all pods (api, chart-discovery, k8s-agent, resource-sync, status-updates). The default ceiling of 50 × 5 = 250 **exceeds** PostgreSQL's default `max_connections=100`. Connections are opened on demand (no minimum is kept warm unless you set `minIdle`), so a quiet install sits far below the ceiling — but under load you can hit it. Either raise `max_connections` server-side or drop `maxSize` to 10–20 for small installs.
 - If you put PgBouncer in front (session mode — see above), `maxSize` is the pool size against PgBouncer, not against Postgres. The Postgres-side connection count is whatever PgBouncer's `default_pool_size` dictates.
 - Lowering `connectionTimeoutSecs` is the right move during incidents — it surfaces "Postgres is gone" faster instead of letting requests stack up on the queue.
 
