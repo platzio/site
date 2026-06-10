@@ -70,6 +70,25 @@ const config: Config = {
         },
       } satisfies Preset.Options,
     ],
+    [
+      "redocusaurus",
+      {
+        // Render the backend's OpenAPI schema as an interactive reference.
+        // The spec is fetched from the latest platzio/backend release at build
+        // time, so the reference tracks the released API without committing a
+        // copy here. To pin a version, swap `latest` for a tag (e.g. v0.7.0).
+        specs: [
+          {
+            id: "platz-api",
+            spec: "https://github.com/platzio/backend/releases/latest/download/openapi.yaml",
+            route: "/api/",
+          },
+        ],
+        theme: {
+          primaryColor: "#8f5739",
+        },
+      },
+    ],
   ],
 
   themeConfig: {
@@ -90,10 +109,17 @@ const config: Config = {
           label: "Docs",
         },
         {
-          type: "docSidebar",
-          sidebarId: "api",
-          position: "left",
+          type: "dropdown",
           label: "API",
+          position: "left",
+          items: [
+            { label: "Reference", to: "/api" },
+            { label: "Authentication", to: "/docs/api/auth" },
+            { label: "Pagination", to: "/docs/api/pagination" },
+            { label: "Permissions", to: "/docs/api/permissions" },
+            { label: "Python SDK", to: "/docs/api/sdks/python" },
+            { label: "Rust SDK", to: "/docs/api/sdks/rust" },
+          ],
         },
         { to: "/news", label: "News", position: "left" },
         {
@@ -118,7 +144,7 @@ const config: Config = {
               to: "/docs/guide/chart-ext/overview",
             },
             { label: "Administration", to: "/docs/guide/admin/auth" },
-            { label: "API", to: "/docs/api" },
+            { label: "API Reference", to: "/api" },
           ],
         },
         {
