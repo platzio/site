@@ -40,8 +40,8 @@ cross-cluster authentication to wire up — the in-cluster ServiceAccount is eno
 
 ## Prerequisites
 
-- An **EKS cluster** (1.14+). If you don't have one, `terraform-aws-eks` or `eksctl`
-  both work; Platz doesn't care how it was created.
+- An **EKS cluster** (any version EKS currently supports). If you don't have one,
+  `terraform-aws-eks` or `eksctl` both work; Platz doesn't care how it was created.
 - An **IngressClass** backed by a controller — `ingress-nginx` or the AWS Load Balancer
   Controller are the common choices.
 - **`cert-manager`** if you want automatic TLS, or an ACM certificate on an ALB if you

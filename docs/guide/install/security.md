@@ -68,8 +68,10 @@ and reaches the target cluster's API the same way. Design the network around tha
   tight CIDR allow-list.
 - **Keep Postgres private.** The database must be reachable from the Platz pods and
   nowhere else. Put RDS in private subnets with a security group that only admits the
-  control cluster's nodes. Never expose it publicly. Enforce TLS by setting
-  `PGSSLMODE=require` (or `verify-full`) via `*.extraEnv` — see
+  control cluster's nodes. Never expose it publicly. Note that Platz's database
+  connections are currently **plaintext** — the backend connects via `tokio-postgres`
+  without a TLS connector, and libpq-style variables like `PGSSLMODE` have no effect —
+  so a private, tightly-scoped network path is the control here, not TLS. See
   [Database](/docs/guide/install/database).
 - **Terminate TLS at the ingress.** Always serve the UI/API over HTTPS — via cert-manager
   or an ACM certificate on an ALB. The OIDC callback and the session cookie depend on it.
@@ -137,7 +139,8 @@ For a production install handling anything sensitive:
 1. Control cluster separate from deployment clusters; ideally one AWS account per
    environment.
 2. Private (or tightly CIDR-restricted) EKS API endpoints everywhere.
-3. RDS in private subnets, TLS enforced, reachable only from the control cluster.
+3. RDS in private subnets, reachable only from the control cluster (Platz's database
+   connections are plaintext today, so the network boundary is the control).
 4. HTTPS-only ingress, OIDC with MFA, a short IdP session policy.
 5. OIDC/Postgres/backup secrets in a secrets manager, not in values files.
 6. Bot tokens minimized and rotated; per-deployment `platz-creds` preferred for automation
