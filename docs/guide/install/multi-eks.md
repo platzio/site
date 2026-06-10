@@ -145,6 +145,11 @@ it can see appears at `/admin/clusters`. For each one:
 A deployment cluster that isn't attached to any env is visible only to site admins and
 can't receive deployments from env-level users.
 
+> **Leave the control cluster unattached.** Because it's in the same account, the agent
+> discovers the control cluster too, and it shows up in this list. Don't assign it to an
+> env — keeping it unattached (or setting its **Ignore** flag) means no workloads ever get
+> deployed onto the control plane, which is the isolation you set this topology up for.
+
 ## Multiple regions
 
 Discovery already spans every region in the account, so a single `eks` agent instance
