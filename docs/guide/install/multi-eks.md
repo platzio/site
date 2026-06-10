@@ -27,26 +27,21 @@ See [Security considerations](/docs/guide/install/security) for the full rationa
 
 ## How it works
 
-```
-┌───────────── Control cluster (account 111122223333) ─────────────┐
-│  namespace: platz                                                 │
-│  api · frontend · k8s-agent (provider: eks) · chart-discovery     │
-│        resource-sync · status-updates                             │
-│                         │                                         │
-│                         │ 1. discover: eks:ListClusters /          │
-│                         │    DescribeCluster across all regions    │
-│                         │ 2. deploy: spawn a helm pod here that     │
-│                         │    runs `aws eks get-token` and helm      │
-│                         ▼    against the target cluster's API       │
-└───────────────────────┬───────────────────────┬──────────────────┘
-                        │                       │
-            ┌───────────▼──────────┐ ┌──────────▼───────────┐
-            │ Deployment cluster A │ │ Deployment cluster B │
-            │ (same account)       │ │ (same account)       │
-            │ access entry maps    │ │ access entry maps    │
-            │ the k8s-agent IAM    │ │ the k8s-agent IAM    │
-            │ role → cluster-admin │ │ role → cluster-admin │
-            └──────────────────────┘ └──────────────────────┘
+```mermaid
+flowchart TB
+  subgraph control["Control cluster — account 111122223333"]
+    platz["namespace: platz<br/>api · frontend · k8s-agent (provider: eks)<br/>chart-discovery · resource-sync · status-updates"]
+  end
+
+  subgraph clusterA["Deployment cluster A (same account)"]
+    a["access entry maps the<br/>k8s-agent IAM role → cluster-admin"]
+  end
+  subgraph clusterB["Deployment cluster B (same account)"]
+    b["access entry maps the<br/>k8s-agent IAM role → cluster-admin"]
+  end
+
+  platz -->|"1. discover: eks:ListClusters / DescribeCluster (all regions)<br/>2. deploy: helm pod runs aws eks get-token against the target API"| clusterA
+  platz --> clusterB
 ```
 
 Two things make this work:

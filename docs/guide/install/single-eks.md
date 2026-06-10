@@ -18,19 +18,20 @@ cluster is good enough for your threat model.
 
 ## Topology
 
-```
-┌─────────────────────────── EKS cluster (one AWS account) ───────────────────────────┐
-│                                                                                      │
-│   namespace: platz                                                                   │
-│   ┌────────────┐  ┌────────────┐  ┌─────────────────┐  ┌───────────────┐             │
-│   │ api +      │  │ k8s-agent  │  │ chart-discovery │  │ resource-sync │  ...        │
-│   │ frontend   │  │ (local|eks)│  │ (ecr|oci)       │  │ status-updates│             │
-│   └────────────┘  └─────┬──────┘  └────────┬────────┘  └───────────────┘             │
-│                         │ helm install/upgrade        ▲ reflects resources           │
-│                         ▼                             │                              │
-│   namespace: my-app-1   namespace: my-app-2   ...  (one namespace per deployment)    │
-│                                                                                      │
-└──────────────────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+  subgraph eks["EKS cluster — one AWS account"]
+    subgraph platz["namespace: platz"]
+      api["api + frontend"]
+      agent["k8s-agent<br/>(local | eks)"]
+      cd["chart-discovery<br/>(ecr | oci)"]
+      sync["resource-sync<br/>status-updates"]
+    end
+    apps["namespace: my-app-1<br/>namespace: my-app-2<br/>… one namespace per deployment"]
+  end
+
+  agent -->|helm install / upgrade| apps
+  apps -.->|reflects resources| sync
 ```
 
 The `platz-k8s-agent` worker spawns a short-lived helm pod **inside the control

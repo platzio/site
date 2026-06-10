@@ -29,18 +29,21 @@ into each tenant account, and create a k8s-agent role there whose trust policy s
 "allow `system:serviceaccount:platz:platz-k8s-agent-<instance>` from the control cluster's
 issuer to assume me via `AssumeRoleWithWebIdentity`".
 
-```
-Control account 1111…                         Tenant account 2222…
-┌──────────────────────────────┐              ┌──────────────────────────────────────┐
-│ EKS control cluster          │              │ aws_iam_openid_connect_provider        │
-│  issuer: oidc.eks.us-east-1   │── mirror ──▶ │   (same url + thumbprint as control)   │
-│          …/id/ABC123          │              │                                        │
-│                              │              │ role: platz-k8s-agent-tenant           │
-│ pod: platz-k8s-agent-tenant   │── web ──────▶│   trust: AssumeRoleWithWebIdentity for │
-│  SA token (OIDC)             │  identity    │     system:serviceaccount:platz:       │
-│                              │  federation  │       platz-k8s-agent-tenant           │
-└──────────────────────────────┘              │   perms: eks:List/DescribeCluster, …   │
-                                               └──────────────────────────────────────┘
+```mermaid
+flowchart LR
+  subgraph control["Control account 1111…"]
+    issuer["EKS control cluster<br/>issuer: oidc.eks.us-east-1…/id/ABC123"]
+    pod["pod: platz-k8s-agent-tenant<br/>SA token (OIDC)"]
+  end
+
+  subgraph tenant["Tenant account 2222…"]
+    oidc["aws_iam_openid_connect_provider<br/>(same url + thumbprint as control)"]
+    role["role: platz-k8s-agent-tenant<br/>trust: AssumeRoleWithWebIdentity for<br/>system:serviceaccount:platz:platz-k8s-agent-tenant<br/>perms: eks:List/DescribeCluster, …"]
+  end
+
+  issuer -->|mirror| oidc
+  pod -->|web-identity federation| role
+  oidc -.->|trusted by| role
 ```
 
 Each tenant account gets its **own k8s-agent instance** — a separate StatefulSet, pod,
