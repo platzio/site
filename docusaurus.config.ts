@@ -35,11 +35,16 @@ const config: Config = {
       "@docusaurus/plugin-client-redirects",
       {
         createRedirects(existingPath: string) {
+          // Map the news index from its legacy /blog URL.
           if (existingPath === "/news") {
             return ["/blog"];
           }
-          if (existingPath.startsWith("/news/")) {
-            return [existingPath.replace(/^\/news\//, "/blog/")];
+          // Only redirect /blog/<slug> -> /news/<slug> for actual posts.
+          // Archive, tag, and pagination routes were never linked under /blog,
+          // so generating redirect stubs for them just bloats the crawl surface.
+          const match = existingPath.match(/^\/news\/([^/]+)$/);
+          if (match && !["archive", "tags", "page"].includes(match[1])) {
+            return [`/blog/${match[1]}`];
           }
           return undefined;
         },
@@ -67,6 +72,12 @@ const config: Config = {
         },
         theme: {
           customCss: "./src/css/custom.css",
+        },
+        sitemap: {
+          // Keep thin, auto-generated listing pages out of the sitemap so
+          // they don't bloat Google's "crawled - currently not indexed"
+          // bucket. They remain reachable via on-site navigation.
+          ignorePatterns: ["/news/archive", "/news/page/**", "/news/tags/**"],
         },
       } satisfies Preset.Options,
     ],
