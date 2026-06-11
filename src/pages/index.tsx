@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import clsx from "clsx";
 import Link from "@docusaurus/Link";
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
 import Heading from "@theme/Heading";
 import CodeBlock from "@theme/CodeBlock";
@@ -702,12 +701,16 @@ function TechSection() {
 /* ------------------------------------------------------------------ */
 /* Page                                                               */
 /* ------------------------------------------------------------------ */
+const HOME_DESCRIPTION =
+  "Platz is an open-source, self-hosted control plane for Kubernetes Helm " +
+  "deployments. A typed UI for every chart, env-scoped RBAC, full task " +
+  "history, and live in-app metrics from each running release.";
+
 export default function Home(): ReactNode {
-  const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
       title="Platz — manages your Helm deployments"
-      description={siteConfig.tagline}
+      description={HOME_DESCRIPTION}
     >
       <div className={styles.page}>
         <Hero />
